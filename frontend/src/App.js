@@ -3,6 +3,9 @@ import AdminDashboard from './AdminDashboard';
 import StudentAssignmentPortal from './StudentAssignmentPortal';
 import './App.css';
 
+// Vercel par environment variable se Render backend ka URL uthayega
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 async function readResponse(response) {
   const responseText = await response.text();
   if (!responseText) {
@@ -38,7 +41,9 @@ function App() {
 
     async function checkSession() {
       try {
-        const adminResponse = await fetch('/api/auth/me');
+        const adminResponse = await fetch(`${API_URL}/api/auth/me`, {
+          credentials: 'include',
+        });
         if (adminResponse.status !== 401) {
           const adminBody = await readResponse(adminResponse);
           if (!adminResponse.ok) {
@@ -53,7 +58,9 @@ function App() {
           return;
         }
 
-        const studentResponse = await fetch('/api/student/me');
+        const studentResponse = await fetch(`${API_URL}/api/student/me`, {
+          credentials: 'include',
+        });
         if (studentResponse.status === 401) {
           if (isMounted) {
             setAuthStatus('unauthenticated');
@@ -93,23 +100,23 @@ function App() {
     try {
       const isAdminLogin = loginMode === 'admin';
       const studentIdentifier = studentId.trim();
-      const response = await fetch(
-        isAdminLogin ? '/api/auth/login' : '/api/student/login',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(
-            isAdminLogin
-              ? { email, password }
-              : {
-                  ...(studentIdentifier.includes('@')
-                    ? { email: studentIdentifier }
-                    : { studentId: studentIdentifier }),
-                  password,
-                }
-          ),
-        }
-      );
+      const endpoint = isAdminLogin ? `${API_URL}/api/auth/login` : `${API_URL}/api/student/login`;
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(
+          isAdminLogin
+            ? { email, password }
+            : {
+                ...(studentIdentifier.includes('@')
+                  ? { email: studentIdentifier }
+                  : { studentId: studentIdentifier }),
+                password,
+              }
+        ),
+      });
       const responseBody = await readResponse(response);
       if (!response.ok) {
         throw new Error(
@@ -129,10 +136,11 @@ function App() {
   async function handleSignOut() {
     setAuthError('');
     try {
-      const response = await fetch(
-        authStatus === 'admin' ? '/api/auth/logout' : '/api/student/logout',
-        { method: 'POST' }
-      );
+      const endpoint = authStatus === 'admin' ? `${API_URL}/api/auth/logout` : `${API_URL}/api/student/logout`;
+      const response = await fetch(endpoint, { 
+        method: 'POST',
+        credentials: 'include',
+      });
       const responseBody = await readResponse(response);
       if (!response.ok) {
         throw new Error(
