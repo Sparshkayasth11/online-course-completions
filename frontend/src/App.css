@@ -1,0 +1,809 @@
+:root {
+  color-scheme: dark;
+  --surface-canvas: #0b0f19;
+  --surface-page: #0f172a;
+  --surface-raised: #151e2f;
+  --surface-card: #1e293b;
+  --surface-input: #111827;
+  --line-subtle: rgb(255 255 255 / 10%);
+  --line-strong: rgb(148 163 184 / 25%);
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --accent: #6366f1;
+  --accent-hover: #818cf8;
+  --accent-soft: #312e81;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --card-shadow: 0 10px 25px -5px rgb(0 0 0 / 50%);
+}
+
+.App {
+  min-height: 100vh;
+}
+
+.app-shell {
+  color: var(--text-primary);
+  background:
+    radial-gradient(ellipse at 82% -10%, rgb(79 70 229 / 13%), transparent 38rem),
+    var(--surface-canvas);
+}
+
+.app-header {
+  border-color: var(--line-subtle) !important;
+  background: rgb(11 15 25 / 88%) !important;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 3%);
+  backdrop-filter: blur(18px) saturate(135%);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+}
+
+.brand-mark {
+  background: linear-gradient(145deg, #6366f1, #3730a3);
+  box-shadow: 0 8px 24px rgb(79 70 229 / 30%);
+}
+
+.app-header .text-indigo-600,
+.admin-dashboard .text-indigo-600,
+.student-portal .text-indigo-600 {
+  color: #a5b4fc !important;
+}
+
+.app-header .text-slate-900,
+.app-header .text-slate-800 {
+  color: var(--text-primary) !important;
+}
+
+.app-signout {
+  border-color: var(--line-strong) !important;
+  color: var(--text-secondary) !important;
+  background: rgb(30 41 59 / 68%);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.app-signout:hover {
+  border-color: rgb(165 180 252 / 45%) !important;
+  color: var(--text-primary) !important;
+  background: #273449 !important;
+  transform: translateY(-1px);
+}
+
+.app-content {
+  min-height: 0;
+}
+
+.app-footer {
+  border-color: var(--line-subtle) !important;
+  color: var(--text-muted) !important;
+  background: rgb(11 15 25 / 55%);
+}
+
+.app-footer .text-slate-700 {
+  color: var(--text-secondary) !important;
+}
+
+.login-shell {
+  color: var(--text-primary);
+  background:
+    radial-gradient(ellipse at 12% 12%, rgb(79 70 229 / 24%), transparent 34rem),
+    radial-gradient(ellipse at 88% 90%, rgb(37 99 235 / 12%), transparent 32rem),
+    var(--surface-canvas);
+}
+
+.login-card {
+  border: 1px solid var(--line-subtle) !important;
+  border-radius: 12px !important;
+  color: var(--text-primary);
+  background: rgb(21 30 47 / 94%) !important;
+  box-shadow: var(--card-shadow);
+}
+
+.login-card .text-slate-900,
+.login-card .text-slate-800 {
+  color: var(--text-primary) !important;
+}
+
+.login-card .text-slate-700,
+.login-card label {
+  color: var(--text-secondary) !important;
+}
+
+.login-card .text-indigo-600 {
+  color: #a5b4fc !important;
+}
+
+.login-card input {
+  min-height: 2.75rem;
+  border: 1px solid var(--line-strong) !important;
+  border-radius: 8px;
+  color: var(--text-primary) !important;
+  background: var(--surface-input) !important;
+}
+
+.login-card input::placeholder,
+.admin-dashboard input::placeholder,
+.admin-dashboard textarea::placeholder {
+  color: #7f8da3 !important;
+  opacity: 1;
+}
+
+.login-card input:focus,
+.admin-dashboard input:focus,
+.admin-dashboard textarea:focus {
+  border-color: #818cf8 !important;
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(99 102 241 / 22%) !important;
+}
+
+.login-card > div > button[aria-pressed='true'],
+.login-card form > button,
+.admin-dashboard form > button,
+.admin-dashboard > div > div > button,
+.student-portal button.bg-indigo-600,
+.student-portal .bg-indigo-600 {
+  border-color: transparent;
+  color: #fff !important;
+  background: linear-gradient(135deg, #4f46e5, #3b82f6) !important;
+  box-shadow: 0 5px 16px rgb(59 130 246 / 20%);
+}
+
+.login-card > div > button[aria-pressed='true']:hover,
+.login-card form > button:hover,
+.admin-dashboard form > button:hover:not(:disabled),
+.admin-dashboard > div > div > button:hover:not(:disabled),
+.student-portal button.bg-indigo-600:hover:not(:disabled) {
+  background: linear-gradient(135deg, #6366f1, #60a5fa) !important;
+  box-shadow: 0 8px 22px rgb(59 130 246 / 28%);
+  transform: translateY(-1px);
+}
+
+.login-card > div > button[aria-pressed='false'] {
+  border: 1px solid var(--line-subtle);
+  color: var(--text-secondary) !important;
+  background: #1e293b !important;
+}
+
+.login-card > div > button[aria-pressed='false']:hover {
+  color: var(--text-primary) !important;
+  background: #273449 !important;
+}
+
+.login-card button:disabled,
+.admin-dashboard button:disabled,
+.student-portal button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+  transform: none;
+}
+
+.admin-dashboard {
+  min-height: 100%;
+  color: var(--text-primary);
+  background:
+    radial-gradient(ellipse at 10% 0%, rgb(79 70 229 / 10%), transparent 34rem),
+    transparent !important;
+}
+
+.admin-dashboard header .text-slate-900,
+.admin-dashboard h1,
+.admin-dashboard h2,
+.admin-dashboard h3,
+.admin-dashboard h4 {
+  color: var(--text-primary) !important;
+}
+
+.admin-dashboard .text-slate-800,
+.admin-dashboard .text-slate-700 {
+  color: var(--text-secondary) !important;
+}
+
+.admin-dashboard .text-slate-600,
+.admin-dashboard .text-slate-500 {
+  color: var(--text-muted) !important;
+}
+
+.admin-dashboard .text-indigo-700 {
+  color: #a5b4fc !important;
+}
+
+.admin-dashboard section {
+  border: 1px solid var(--line-subtle) !important;
+  border-radius: 12px !important;
+  background: var(--surface-card) !important;
+  box-shadow: var(--card-shadow);
+}
+
+.admin-dashboard input,
+.admin-dashboard textarea,
+.login-card input {
+  border: 1px solid var(--line-strong) !important;
+  border-radius: 8px;
+  color: var(--text-primary) !important;
+  background: var(--surface-input) !important;
+}
+
+.admin-dashboard input[id^='new-password-'] {
+  border: 1px solid rgb(255 255 255 / 20%) !important;
+  color: #fff !important;
+  background: #0f172a !important;
+  opacity: 1;
+  -webkit-text-fill-color: #fff;
+}
+
+.admin-dashboard input[id^='new-password-']::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
+  -webkit-text-fill-color: #94a3b8;
+}
+
+.admin-dashboard input[id^='new-password-']:focus {
+  border-color: #6366f1 !important;
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(99 102 241 / 28%) !important;
+}
+
+.admin-dashboard label {
+  color: var(--text-secondary) !important;
+}
+
+.admin-dashboard .bg-red-50,
+.login-card .bg-red-50 {
+  border: 1px solid rgb(248 113 113 / 28%);
+  color: #fecaca !important;
+  background: rgb(127 29 29 / 25%) !important;
+}
+
+.admin-dashboard .text-red-700,
+.admin-dashboard .text-red-800 {
+  color: #fca5a5 !important;
+}
+
+.admin-dashboard .overflow-hidden.rounded-xl.border {
+  border-color: var(--line-subtle) !important;
+  border-radius: 10px;
+  background: var(--surface-raised);
+}
+
+.admin-dashboard table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--text-secondary);
+}
+
+.admin-dashboard thead,
+.admin-dashboard thead.bg-slate-50 {
+  color: #cbd5e1 !important;
+  background: #182336 !important;
+}
+
+.admin-dashboard thead tr {
+  border-bottom: 1px solid var(--line-strong) !important;
+}
+
+.admin-dashboard th {
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+  color: #cbd5e1 !important;
+  letter-spacing: 0.025em;
+}
+
+.admin-dashboard tbody,
+.admin-dashboard tbody.bg-white {
+  background: #1b2638 !important;
+}
+
+.admin-dashboard tbody tr {
+  border-color: rgb(255 255 255 / 7%) !important;
+  transition: background-color 140ms ease;
+}
+
+.admin-dashboard tbody tr:hover {
+  background: rgb(148 163 184 / 5%);
+}
+
+.admin-dashboard tbody td {
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
+  color: var(--text-secondary) !important;
+  line-height: 1.5;
+}
+
+.admin-dashboard tbody td form button.bg-indigo-50 {
+  border: 1px solid rgb(129 140 248 / 45%);
+  color: #fff !important;
+  background: #4338ca !important;
+  font-weight: 700;
+}
+
+.admin-dashboard tbody td form button.bg-indigo-50:hover:not(:disabled) {
+  border-color: #a5b4fc;
+  color: #fff !important;
+  background: #4f46e5 !important;
+}
+
+.admin-dashboard tbody td form button.bg-red-50 {
+  border: 1px solid rgb(248 113 113 / 45%) !important;
+  color: #fff !important;
+  background: #991b1b !important;
+  font-weight: 700;
+}
+
+.admin-dashboard tbody td form button.bg-red-50:hover:not(:disabled) {
+  border-color: #fca5a5 !important;
+  color: #fff !important;
+  background: #b91c1c !important;
+}
+
+.admin-dashboard tbody td form button:disabled {
+  color: #e2e8f0 !important;
+  opacity: 0.7;
+}
+
+.admin-dashboard .bg-slate-100 {
+  color: #cbd5e1 !important;
+  background: #334155 !important;
+}
+
+.admin-dashboard .border-slate-200,
+.admin-dashboard .border-slate-300 {
+  border-color: var(--line-strong) !important;
+}
+
+.student-portal {
+  min-height: 100vh;
+  color: var(--text-primary);
+  background:
+    radial-gradient(ellipse at 10% 0%, rgb(79 70 229 / 11%), transparent 34rem),
+    radial-gradient(ellipse at 96% 55%, rgb(37 99 235 / 7%), transparent 30rem),
+    transparent !important;
+}
+
+.student-portal h1,
+.student-portal h2,
+.student-portal h3,
+.student-portal h4,
+.student-portal .text-slate-900,
+.student-portal .text-slate-800 {
+  color: var(--text-primary) !important;
+}
+
+.student-portal .text-slate-700 {
+  color: var(--text-secondary) !important;
+}
+
+.student-portal .text-slate-600,
+.student-portal .text-slate-500 {
+  color: var(--text-muted) !important;
+}
+
+.student-portal .text-indigo-700 {
+  color: #a5b4fc !important;
+}
+
+.student-portal section.rounded-2xl.border,
+.portal-card,
+.syllabus-panel,
+.student-portal > div > section > div > div.rounded-2xl.border {
+  border: 1px solid var(--line-subtle) !important;
+  border-radius: 12px !important;
+  color: var(--text-primary);
+  background: var(--surface-card) !important;
+  box-shadow: var(--card-shadow);
+}
+
+.portal-card {
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.portal-card:hover {
+  border-color: rgb(129 140 248 / 35%) !important;
+  box-shadow: 0 14px 32px rgb(0 0 0 / 45%);
+  transform: translateY(-2px);
+}
+
+.syllabus-panel {
+  background: #151e2f !important;
+}
+
+.syllabus-week {
+  min-height: 3.25rem;
+  border-color: var(--line-strong) !important;
+  color: var(--text-secondary) !important;
+  background: #1e293b !important;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.syllabus-week[aria-current='step'] {
+  border-color: #6366f1 !important;
+  border-left: 4px solid #6366f1 !important;
+  color: #c7d2fe !important;
+  background: #312e81 !important;
+}
+
+.syllabus-week:not(:disabled):hover {
+  border-color: rgb(129 140 248 / 55%) !important;
+  background: #273449 !important;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 28%);
+  transform: translateY(-1px);
+}
+
+.syllabus-week[aria-current='step']:hover {
+  background: #3730a3 !important;
+}
+
+.syllabus-week:disabled {
+  border: 1px solid rgb(255 255 255 / 10%) !important;
+  color: #cbd5e1 !important;
+  background: rgb(255 255 255 / 5%) !important;
+  opacity: 1 !important;
+}
+
+.syllabus-week:disabled > span,
+.syllabus-week:disabled > span > span:first-child {
+  color: #cbd5e1 !important;
+}
+
+.syllabus-week:disabled .status-badge {
+  border-color: rgb(255 255 255 / 10%);
+  color: #cbd5e1 !important;
+  background: rgb(255 255 255 / 7%) !important;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.student-portal .bg-emerald-100,
+.student-portal .bg-emerald-50,
+.student-portal .from-emerald-50 {
+  color: #a7f3d0 !important;
+  background-color: rgb(6 78 59 / 50%) !important;
+}
+
+.student-portal .text-emerald-800 {
+  color: #a7f3d0 !important;
+}
+
+.student-portal .bg-indigo-100,
+.student-portal .bg-indigo-50 {
+  color: #c7d2fe !important;
+  background: rgb(49 46 129 / 72%) !important;
+}
+
+.student-portal .text-indigo-800 {
+  color: #c7d2fe !important;
+}
+
+.student-portal .bg-slate-100 {
+  color: #cbd5e1 !important;
+  background: #334155 !important;
+}
+
+.student-portal .text-slate-600,
+.student-portal .text-slate-700 {
+  color: var(--text-secondary) !important;
+}
+
+.student-portal [role='progressbar'] {
+  overflow: hidden;
+  background: #334155 !important;
+}
+
+.student-portal [role='progressbar'] > div {
+  background: linear-gradient(90deg, #4f46e5, #3b82f6) !important;
+}
+
+.student-portal .bg-amber-50,
+.student-portal .border-amber-200 {
+  border-color: rgb(251 191 36 / 28%) !important;
+  color: #fde68a !important;
+  background: rgb(120 53 15 / 28%) !important;
+}
+
+.student-portal .text-amber-950,
+.student-portal .text-amber-900 {
+  color: #fde68a !important;
+}
+
+.student-portal .bg-red-50 {
+  border: 1px solid rgb(248 113 113 / 28%);
+  color: #fecaca !important;
+  background: rgb(127 29 29 / 25%) !important;
+}
+
+.student-portal .text-red-800 {
+  color: #fecaca !important;
+}
+
+.student-portal .bg-emerald-50.text-emerald-800 {
+  border: 1px solid rgb(52 211 153 / 25%);
+  color: #a7f3d0 !important;
+  background: rgb(6 78 59 / 32%) !important;
+}
+
+.certificate-card {
+  border: 1px solid var(--line-subtle) !important;
+  border-radius: 12px !important;
+  color: var(--text-primary);
+  background: #182336 !important;
+  box-shadow: 0 8px 22px rgb(0 0 0 / 30%);
+}
+
+.certificate-card .text-slate-900 {
+  color: var(--text-primary) !important;
+}
+
+.certificate-card .text-slate-600 {
+  color: var(--text-muted) !important;
+}
+
+.certificate-card button:disabled {
+  border: 1px solid rgb(255 255 255 / 10%);
+  color: #94a3b8 !important;
+  background: rgb(255 255 255 / 5%) !important;
+  opacity: 1 !important;
+}
+
+.certificate-card .border-emerald-200 {
+  border-color: rgb(52 211 153 / 38%) !important;
+}
+
+.certificate-action {
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.certificate-action:not(:disabled):hover {
+  box-shadow: 0 7px 20px rgb(16 185 129 / 22%);
+  transform: translateY(-1px);
+}
+
+.student-portal a.bg-emerald-700,
+.student-portal button.bg-emerald-700 {
+  color: #ecfdf5 !important;
+  background: #047857 !important;
+}
+
+.student-portal .bg-slate-50 {
+  border-color: var(--line-subtle);
+  color: var(--text-secondary) !important;
+  background: #172131 !important;
+}
+
+.student-portal li.rounded-lg.border {
+  border-color: var(--line-subtle) !important;
+  border-radius: 10px;
+  background: rgb(15 23 42 / 38%);
+}
+
+.student-portal code,
+.student-portal pre {
+  border-radius: 8px;
+  color: #dbeafe;
+  background: #0b1220;
+}
+
+.student-portal pre {
+  overflow-x: auto;
+  padding: 1rem;
+  border: 1px solid var(--line-subtle);
+  line-height: 1.7;
+}
+
+input,
+textarea,
+select {
+  border: 1px solid rgb(255 255 255 / 20%) !important;
+  color: #fff !important;
+  background-color: #0f172a !important;
+  font-weight: 500;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #6366f1 !important;
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(99 102 241 / 25%) !important;
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .admin-dashboard,
+  .student-portal {
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+  }
+
+  .admin-dashboard section,
+  .portal-card,
+  .syllabus-panel {
+    padding: 1rem;
+  }
+
+  .admin-dashboard table {
+    font-size: 0.75rem;
+  }
+
+  .admin-dashboard th,
+  .admin-dashboard tbody td {
+    padding-right: 0.45rem;
+    padding-left: 0.45rem;
+  }
+}
+
+.admin-dashboard .admin-tab-button {
+  border: 1px solid transparent;
+  color: #a1a1aa !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.admin-dashboard .admin-tab-button:hover {
+  color: #fafafa !important;
+  background: rgb(255 255 255 / 5%) !important;
+}
+
+.admin-dashboard .admin-tab-button[aria-selected='true'] {
+  border-color: #3f3f46;
+  color: #fafafa !important;
+  background: #27272a !important;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 35%) !important;
+}
+
+.admin-dashboard .admin-action-button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid #3f3f46 !important;
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  color: #f4f4f5 !important;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.15;
+  text-align: center;
+  white-space: normal;
+  background: #18181b !important;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 20%) !important;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    transform 140ms ease;
+}
+
+.admin-dashboard .admin-action-button:hover:not(:disabled) {
+  border-color: #71717a !important;
+  background: #27272a !important;
+  transform: translateY(-1px);
+}
+
+.admin-dashboard .admin-action-button.admin-action-primary {
+  border-color: #52525b !important;
+  background: #27272a !important;
+}
+
+.admin-dashboard .admin-action-button.admin-action-primary:hover:not(:disabled) {
+  border-color: #a1a1aa !important;
+  background: #3f3f46 !important;
+}
+
+.admin-dashboard .admin-action-button.admin-action-danger {
+  border-color: rgb(239 68 68 / 40%) !important;
+  color: #fecaca !important;
+  background: rgb(69 10 10 / 48%) !important;
+}
+
+.admin-dashboard .admin-action-button.admin-action-danger:hover:not(:disabled) {
+  border-color: rgb(248 113 113 / 70%) !important;
+  background: rgb(127 29 29 / 75%) !important;
+}
+
+.admin-dashboard .certificate-table-wrap {
+  border-color: var(--line-strong) !important;
+}
+
+.admin-dashboard .certificate-table {
+  min-width: 1050px;
+  table-layout: fixed;
+}
+
+.admin-dashboard .certificate-table th {
+  padding: 0.9rem 1rem;
+  color: #cbd5e1 !important;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+  background: #111827 !important;
+}
+
+.admin-dashboard .certificate-table td {
+  padding: 1rem;
+  border-top: 1px solid rgb(255 255 255 / 8%);
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+.admin-dashboard .certificate-table tbody tr:hover {
+  background: rgb(148 163 184 / 7%);
+}
+
+.admin-dashboard .certificate-table-name {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+.admin-dashboard .certificate-status-badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.admin-dashboard .certificate-status-completed {
+  border-color: rgb(52 211 153 / 35%);
+  color: #a7f3d0;
+  background: rgb(6 95 70 / 25%);
+}
+
+.admin-dashboard .certificate-status-progress {
+  border-color: rgb(148 163 184 / 25%);
+  color: #cbd5e1;
+  background: rgb(71 85 105 / 25%);
+}
+
+.admin-dashboard .certificate-table-empty {
+  padding: 2rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
