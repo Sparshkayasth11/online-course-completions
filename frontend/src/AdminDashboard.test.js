@@ -138,6 +138,7 @@ test('assigns a course using a custom student ID', async () => {
       '/api/admin/assign-course',
       expect.objectContaining({
         method: 'POST',
+        credentials: 'include',
         body: JSON.stringify({
           studentId: '0131AD231067',
           courseId: 'abcdef0123456789abcdef01',

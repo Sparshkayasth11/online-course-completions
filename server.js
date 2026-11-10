@@ -14,7 +14,22 @@ const { requireStudent, validateAuthConfig } = require('./auth');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+const allowedOrigins = new Set([
+  'http://localhost:3000',
+  ...(process.env.FRONTEND_URL || 'https://online-course-completions.vercel.app')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+]);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      callback(null, !origin || allowedOrigins.has(origin));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use('/api', apiRoutes);
 app.get(

@@ -1,6 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
+const API_URL = process.env.REACT_APP_API_URL || '';
+
+function apiUrl(endpoint) {
+  return `${API_URL.replace(/\/+$/, '')}${endpoint}`;
+}
+
 async function requestJson(url, options) {
-  const response = await fetch(url, options);
+  const response = await fetch(apiUrl(url), {
+    ...options,
+    credentials: 'include',
+  });
   const responseText = await response.text();
   let responseBody = {};
 
@@ -303,9 +313,10 @@ export default function StudentCourseDashboard() {
     setError('');
     try {
       const response = await fetch(
-        `/api/student/courses/${encodeURIComponent(
+        apiUrl(`/api/student/courses/${encodeURIComponent(
           selectedCourse._id
-        )}/certificate`
+        )}/certificate`),
+        { credentials: 'include' }
       );
       if (!response.ok) {
         const responseBody = await response.json();

@@ -157,7 +157,7 @@ function setSessionCookie(res) {
     httpOnly: true,
     maxAge: SESSION_DURATION_SECONDS * 1000,
     path: '/',
-    sameSite: 'strict',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
     secure: process.env.NODE_ENV === 'production',
   });
 }
@@ -166,7 +166,7 @@ function clearSessionCookie(res) {
   res.clearCookie(SESSION_COOKIE, {
     httpOnly: true,
     path: '/',
-    sameSite: 'strict',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
     secure: process.env.NODE_ENV === 'production',
   });
 }
@@ -176,7 +176,7 @@ function setStudentSessionCookie(res, studentId) {
     httpOnly: true,
     maxAge: SESSION_DURATION_SECONDS * 1000,
     path: '/',
-    sameSite: 'strict',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
     secure: process.env.NODE_ENV === 'production',
   });
 }
@@ -185,7 +185,7 @@ function clearStudentSessionCookie(res) {
   res.clearCookie('student_session', {
     httpOnly: true,
     path: '/',
-    sameSite: 'strict',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
     secure: process.env.NODE_ENV === 'production',
   });
 }

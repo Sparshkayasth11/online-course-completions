@@ -61,6 +61,7 @@ test('signs in the admin before showing the dashboard', async () => {
     '/api/auth/login',
     expect.objectContaining({
       method: 'POST',
+      credentials: 'include',
       body: JSON.stringify({ email: 'admin@example.com', password: 'password' }),
     })
   );

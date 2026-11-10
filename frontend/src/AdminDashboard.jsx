@@ -4,6 +4,12 @@ import {
   getBranchFromStudentId,
 } from './utils/certificate';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
+function apiUrl(endpoint) {
+  return `${API_URL.replace(/\/+$/, '')}${endpoint}`;
+}
+
 const dashboardTabs = [
   { id: 'students', label: 'Students' },
   { id: 'courses', label: 'Courses' },
@@ -67,22 +73,26 @@ async function readJsonResponse(response) {
 }
 
 async function getJson(url) {
-  return readJsonResponse(await fetch(url));
+  return readJsonResponse(
+    await fetch(apiUrl(url), { credentials: 'include' })
+  );
 }
 
 async function postJson(url, payload) {
-  const response = await fetch(url, {
+  const response = await fetch(apiUrl(url), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify(payload),
   });
   return readJsonResponse(response);
 }
 
 async function patchJson(url, payload) {
-  const response = await fetch(url, {
+  const response = await fetch(apiUrl(url), {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify(payload),
   });
   return readJsonResponse(response);
@@ -90,8 +100,9 @@ async function patchJson(url, payload) {
 
 async function deleteJson(url) {
   return readJsonResponse(
-    await fetch(url, {
+    await fetch(apiUrl(url), {
       method: 'DELETE',
+      credentials: 'include',
     })
   );
 }

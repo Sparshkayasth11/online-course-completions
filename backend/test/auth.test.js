@@ -99,6 +99,29 @@ test('sets and validates an HttpOnly admin session cookie', (t) => {
   assert.equal(accepted, true);
 });
 
+test('configures production session cookies for cross-origin requests', (t) => {
+  configureAuth(t);
+  const previousNodeEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'production';
+  t.after(() => {
+    if (previousNodeEnv === undefined) {
+      delete process.env.NODE_ENV;
+    } else {
+      process.env.NODE_ENV = previousNodeEnv;
+    }
+  });
+
+  let cookieOptions;
+  setSessionCookie({
+    cookie(name, value, options) {
+      cookieOptions = options;
+    },
+  });
+
+  assert.equal(cookieOptions.sameSite, 'none');
+  assert.equal(cookieOptions.secure, true);
+});
+
 test('rejects invalid admin session cookies', (t) => {
   configureAuth(t);
 
@@ -126,7 +149,17 @@ test('rejects invalid admin session cookies', (t) => {
   assert.equal(nextCalled, false);
 });
 
-test('clears the session cookie with matching security attributes', () => {
+test('clears the session cookie with matching security attributes', (t) => {
+  const previousNodeEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'production';
+  t.after(() => {
+    if (previousNodeEnv === undefined) {
+      delete process.env.NODE_ENV;
+    } else {
+      process.env.NODE_ENV = previousNodeEnv;
+    }
+  });
+
   let cookieName;
   let cookieOptions;
   clearSessionCookie({
@@ -138,7 +171,8 @@ test('clears the session cookie with matching security attributes', () => {
 
   assert.equal(cookieName, 'admin_session');
   assert.equal(cookieOptions.httpOnly, true);
-  assert.equal(cookieOptions.sameSite, 'strict');
+  assert.equal(cookieOptions.sameSite, 'none');
+  assert.equal(cookieOptions.secure, true);
   assert.equal(cookieOptions.path, '/');
 });
 
@@ -191,6 +225,16 @@ test('sets and validates a signed student session cookie', (t) => {
 
 test('GET /api/auth/me returns admin details only for a valid session', async (t) => {
   configureAuth(t);
+  const previousFrontendUrl = process.env.FRONTEND_URL;
+  process.env.FRONTEND_URL = 'https://online-course-completions.vercel.app';
+  t.after(() => {
+    if (previousFrontendUrl === undefined) {
+      delete process.env.FRONTEND_URL;
+    } else {
+      process.env.FRONTEND_URL = previousFrontendUrl;
+    }
+  });
+
   const { app } = require('../../server');
   const server = app.listen(0);
   t.after(() => new Promise((resolve, reject) => {
@@ -199,6 +243,24 @@ test('GET /api/auth/me returns admin details only for a valid session', async (t
   await new Promise((resolve) => server.once('listening', resolve));
 
   const baseUrl = `http://127.0.0.1:${server.address().port}`;
+  const preflightResponse = await fetch(`${baseUrl}/api/auth/login`, {
+    method: 'OPTIONS',
+    headers: {
+      Origin: 'https://online-course-completions.vercel.app',
+      'Access-Control-Request-Method': 'POST',
+      'Access-Control-Request-Headers': 'content-type',
+    },
+  });
+  assert.equal(preflightResponse.status, 204);
+  assert.equal(
+    preflightResponse.headers.get('access-control-allow-origin'),
+    'https://online-course-completions.vercel.app'
+  );
+  assert.equal(
+    preflightResponse.headers.get('access-control-allow-credentials'),
+    'true'
+  );
+
   const unauthenticatedResponse = await fetch(`${baseUrl}/api/auth/me`);
   assert.equal(unauthenticatedResponse.status, 401);
 

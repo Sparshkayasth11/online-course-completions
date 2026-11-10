@@ -65,6 +65,14 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/a
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
 
+For the Render deployment, set `REACT_APP_API_URL` in the Vercel project to
+`https://online-course-completions.onrender.com` and redeploy. On the backend,
+set `FRONTEND_URL` to the exact Vercel site origin (for example,
+`https://online-course-completions.vercel.app`). Multiple allowed origins can
+be comma-separated. The local development origin `http://localhost:3000` is
+also allowed by the backend. Ensure `NODE_ENV=production` is set on Render so
+session cookies use `SameSite=None; Secure` for cross-site requests.
+
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
