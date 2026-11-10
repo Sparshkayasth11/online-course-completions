@@ -16,6 +16,7 @@ const PORT = process.env.PORT || 5000;
 
 const allowedOrigins = new Set([
   'http://localhost:3000',
+  'https://online-course-completions-vfwi.vercel.app',
   ...(process.env.FRONTEND_URL || 'https://online-course-completions.vercel.app')
     .split(',')
     .map((origin) => origin.trim())
