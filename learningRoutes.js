@@ -192,6 +192,8 @@ function createCertificatePdf(student, courseTitle, completedAt) {
     lineWidth: 1,
   });
 
+  commands.push('q 1 0 0 1 0 -18 cm');
+
   drawText('JNCT', centerX, 744, 13, {
     font: 'F2',
     color: colors.blue,
@@ -335,29 +337,31 @@ function createCertificatePdf(student, courseTitle, completedAt) {
   drawWrappedText(
     'We appreciate the dedication, commitment and enthusiasm demonstrated during the course and wish the student continued success in future academic and professional endeavors.',
     centerX,
-    286,
+    243,
     480,
     9,
     13,
     { color: colors.gray, align: 'center' }
   );
 
-  drawText('Prof. Ravinder Tanwar', pageWidth - 76, 109, 13, {
+  commands.push('Q');
+
+  drawText('Prof. Ravinder Tanwar', pageWidth - 76, 150, 13, {
     font: 'F2',
     color: colors.navy,
     align: 'right',
   });
-  line(pageWidth - 220, 99, pageWidth - 76, 99, [0.55, 0.58, 0.62], 0.7);
-  drawText('AUTHORIZED SIGNATORY', pageWidth - 76, 85, 8, {
+  line(pageWidth - 220, 140, pageWidth - 76, 140, [0.55, 0.58, 0.62], 0.7);
+  drawText('AUTHORIZED SIGNATORY', pageWidth - 76, 126, 8, {
     font: 'F2',
     color: colors.gray,
     align: 'right',
   });
-  drawText('HOD, CSE (AI&DS)', pageWidth - 76, 72, 8, {
+  drawText('HOD, CSE (AI&DS)', pageWidth - 76, 113, 8, {
     color: colors.gray,
     align: 'right',
   });
-  drawText('JNCT, Bhopal', pageWidth - 76, 59, 8, {
+  drawText('JNCT, Bhopal', pageWidth - 76, 100, 8, {
     color: colors.gray,
     align: 'right',
   });

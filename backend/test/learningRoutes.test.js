@@ -628,6 +628,11 @@ test('custom task route reports required-field validation errors as JSON', async
       certificatePdf,
       /0\.94117647 0\.95686275 0\.97647059 rg 78 482 456 50 re f/
     );
+    assert.match(certificatePdf, /q 1 0 0 1 0 -18 cm/);
+    assert.match(
+      certificatePdf,
+      /BT \/F2 13 Tf .* 1 0 0 1 .* 744 Tm \(JNCT\) Tj ET/
+    );
     assert.match(certificatePdf, /\(JNCT\) Tj/);
     assert.match(certificatePdf, /\(LNCT GROUP OF COLLEGE\) Tj/);
     assert.match(certificatePdf, /\(ONLINE COURSE COMPLETION\) Tj/);
@@ -665,7 +670,7 @@ test('custom task route reports required-field validation errors as JSON', async
     );
     assert.match(
       certificatePdf,
-      /0\.55 0\.58 0\.62 RG 0\.7 w 392 99 m 536 99 l S Q/
+      /0\.55 0\.58 0\.62 RG 0\.7 w 392 140 m 536 140 l S Q/
     );
     assert.doesNotMatch(
       certificatePdf,
