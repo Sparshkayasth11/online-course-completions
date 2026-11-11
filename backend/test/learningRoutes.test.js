@@ -402,6 +402,10 @@ test('custom task route reports required-field validation errors as JSON', async
     ],
     save: async () => {},
   };
+  const moduleProgress = {
+    currentModuleIndex: 0,
+    completedTopics: [],
+  };
   User.findById = () => ({
     select: async () => ({
       _id: '0123456789abcdef01234567',
@@ -411,8 +415,25 @@ test('custom task route reports required-field validation errors as JSON', async
       ],
     }),
   });
-  Course.findById = async () => moduleCourse;
-  Progress.findOne = async () => ({ currentModuleIndex: 0 });
+  Course.findById = () => ({
+    ...moduleCourse,
+    select: async () => moduleCourse,
+  });
+  Progress.findOne = async () => moduleProgress;
+  Progress.findOneAndUpdate = async (filter, update) => {
+    assert.equal(filter.currentModuleIndex, 0);
+    const topic = update.$addToSet.completedTopics;
+    if (
+      !moduleProgress.completedTopics.some(
+        (completedTopic) =>
+          completedTopic.moduleIndex === topic.moduleIndex &&
+          completedTopic.topicDay === topic.topicDay
+      )
+    ) {
+      moduleProgress.completedTopics.push(topic);
+    }
+    return moduleProgress;
+  };
   try {
     for (const modulePath of [
       `/student/courses/${moduleCourseId}/modules/0`,
@@ -435,7 +456,25 @@ test('custom task route reports required-field validation errors as JSON', async
           options: ['No', 'Yes'],
         },
       ]);
+      assert.deepEqual(moduleBody.completedTopicDays, []);
     }
+
+    const completeTopicResponse = await fetch(
+      `${baseUrl}/api/student/courses/${moduleCourseId}/modules/0/topics/1/complete`,
+      {
+        method: 'POST',
+        headers: {
+          Cookie: emailStudentLoginResponse.headers
+            .get('set-cookie')
+            .split(';')[0],
+        },
+      }
+    );
+    assert.equal(completeTopicResponse.status, 200);
+    assert.deepEqual(await completeTopicResponse.json(), {
+      success: true,
+      completedTopicDays: [1],
+    });
 
     const missingWeekResponse = await fetch(
       `${baseUrl}/student/courses/${moduleCourseId}/modules/8`,
@@ -499,6 +538,7 @@ test('custom task route reports required-field validation errors as JSON', async
     currentModuleIndex: 0,
     completedWeeks: [],
     completedModuleIndices: [],
+    completedTopics: [],
   };
   User.findById = () => ({
     select: async () => ({
@@ -512,6 +552,13 @@ test('custom task route reports required-field validation errors as JSON', async
       modules: [
         {
           moduleIndex: 0,
+          lessons: [
+            {
+              day: 1,
+              title: 'Topic',
+              content: 'Study this topic.',
+            },
+          ],
           quiz: [
             {
               question: 'Which answer is correct?',
@@ -526,6 +573,12 @@ test('custom task route reports required-field validation errors as JSON', async
   Progress.findOne = async () => progressBeforeQuiz;
   Progress.findOneAndUpdate = async (filter, update) => {
     assert.equal(filter.currentModuleIndex, 0);
+    if (update.$addToSet.completedTopics) {
+      progressBeforeQuiz.completedTopics.push(
+        update.$addToSet.completedTopics
+      );
+      return progressBeforeQuiz;
+    }
     assert.equal(update.$addToSet.completedWeeks, 0);
     assert.equal(update.$push.weekCompletionTimestamps.weekIndex, 0);
     assert.ok(update.$push.weekCompletionTimestamps.completedAt instanceof Date);
@@ -539,6 +592,38 @@ test('custom task route reports required-field validation errors as JSON', async
     };
   };
   try {
+    const incompleteTopicsQuizResponse = await fetch(
+      `${baseUrl}/api/student/courses/${courseObjectId}/modules/0/quiz`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Cookie: emailStudentLoginResponse.headers
+            .get('set-cookie')
+            .split(';')[0],
+        },
+        body: JSON.stringify({ answers: [1] }),
+      }
+    );
+    assert.equal(incompleteTopicsQuizResponse.status, 403);
+    assert.deepEqual(await incompleteTopicsQuizResponse.json(), {
+      error: 'Complete all topics above to unlock the quiz.',
+      incompleteTopicDays: [1],
+    });
+
+    const completeTopicResponse = await fetch(
+      `${baseUrl}/api/student/courses/${courseObjectId}/modules/0/topics/1/complete`,
+      {
+        method: 'POST',
+        headers: {
+          Cookie: emailStudentLoginResponse.headers
+            .get('set-cookie')
+            .split(';')[0],
+        },
+      }
+    );
+    assert.equal(completeTopicResponse.status, 200);
+
     const quizResponse = await fetch(
       `${baseUrl}/api/student/courses/${courseObjectId}/modules/0/quiz`,
       {

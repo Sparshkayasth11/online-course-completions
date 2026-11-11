@@ -91,6 +91,12 @@ const progressSchema = new Schema(
     currentModuleIndex: { type: Number, default: 0, min: 0, max: 8 },
     completedModuleIndices: [{ type: Number, min: 0, max: 7 }],
     completedWeeks: [{ type: Number, min: 0, max: 7 }],
+    completedTopics: [
+      {
+        moduleIndex: { type: Number, required: true, min: 0, max: 7 },
+        topicDay: { type: Number, required: true, min: 1 },
+      },
+    ],
     weekCompletionTimestamps: [
       {
         weekIndex: { type: Number, required: true, min: 0, max: 7 },

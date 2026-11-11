@@ -120,6 +120,34 @@
 			],
 			"isBackground": false,
 			"problemMatcher": []
+		},
+		{
+			"label": "Run backend tests",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"--prefix",
+				"backend",
+				"test"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Run focused frontend test",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"--prefix",
+				"frontend",
+				"test",
+				"--",
+				"--watchAll=false",
+				"--runTestsByPath",
+				"src/StudentAssignmentPortal.test.js"
+			],
+			"isBackground": false,
+			"problemMatcher": []
 		}
 	]
 }
