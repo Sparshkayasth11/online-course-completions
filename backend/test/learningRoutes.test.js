@@ -626,7 +626,7 @@ test('custom task route reports required-field validation errors as JSON', async
     );
     assert.match(
       certificatePdf,
-      /0\.94117647 0\.95686275 0\.97647059 rg 78 482 456 50 re f/
+      /0\.94117647 0\.95686275 0\.97647059 rg 78 466 456 50 re f/
     );
     assert.match(certificatePdf, /q 1 0 0 1 0 -18 cm/);
     assert.match(
@@ -657,11 +657,31 @@ test('custom task route reports required-field validation errors as JSON', async
     assert.match(certificatePdf, /\(AUTHORIZED SIGNATORY\) Tj/);
     assert.ok(certificatePdf.includes('HOD, CSE \\(AI&DS\\)'));
     assert.ok(
-      certificatePdf.indexOf('(Prof. Ravinder Tanwar)') <
+      certificatePdf.indexOf('(CERTIFICATE OF COMPLETION)') <
+        certificatePdf.indexOf('(This certificate is proudly presented to)')
+    );
+    assert.ok(
+      certificatePdf.indexOf('Computer Science & Engineering') <
+        certificatePdf.indexOf('(COURSE TITLE)')
+    );
+    assert.ok(
+      certificatePdf.indexOf('(COURSE TITLE)') <
+        certificatePdf.indexOf('(Course Detail)')
+    );
+    assert.ok(
+      certificatePdf.indexOf('(Course Detail)') <
+        certificatePdf.indexOf('We appreciate the dedication')
+    );
+    assert.ok(
+      certificatePdf.indexOf('We appreciate the dedication') <
         certificatePdf.indexOf('(AUTHORIZED SIGNATORY)')
     );
     assert.ok(
       certificatePdf.indexOf('(AUTHORIZED SIGNATORY)') <
+        certificatePdf.indexOf('(Prof. Ravinder Tanwar)')
+    );
+    assert.ok(
+      certificatePdf.indexOf('(Prof. Ravinder Tanwar)') <
         certificatePdf.indexOf('HOD, CSE \\(AI&DS\\)')
     );
     assert.ok(

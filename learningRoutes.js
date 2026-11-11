@@ -256,12 +256,12 @@ function createCertificatePdf(student, courseTitle, completedAt) {
     { color: colors.gray, align: 'center' }
   );
 
-  rect(78, 482, pageWidth - 156, 50, {
+  rect(78, 466, pageWidth - 156, 50, {
     fill: colors.paleBlue,
     stroke: [0.72, 0.81, 0.9],
     lineWidth: 0.8,
   });
-  drawText('COURSE TITLE', centerX, 514, 9, {
+  drawText('COURSE TITLE', centerX, 498, 9, {
     font: 'F2',
     color: colors.blue,
     align: 'center',
@@ -271,7 +271,7 @@ function createCertificatePdf(student, courseTitle, completedAt) {
     16,
     ((pageWidth - 190) / measureText(certificateCourseTitle, 16)) * 16
   );
-  drawText(certificateCourseTitle, centerX, 493, courseTitleFontSize, {
+  drawText(certificateCourseTitle, centerX, 477, courseTitleFontSize, {
     font: 'F2',
     color: colors.navy,
     align: 'center',
@@ -346,22 +346,22 @@ function createCertificatePdf(student, courseTitle, completedAt) {
 
   commands.push('Q');
 
-  drawText('Prof. Ravinder Tanwar', pageWidth - 76, 150, 13, {
-    font: 'F2',
-    color: colors.navy,
-    align: 'right',
-  });
   line(pageWidth - 220, 140, pageWidth - 76, 140, [0.55, 0.58, 0.62], 0.7);
   drawText('AUTHORIZED SIGNATORY', pageWidth - 76, 126, 8, {
     font: 'F2',
     color: colors.gray,
     align: 'right',
   });
-  drawText('HOD, CSE (AI&DS)', pageWidth - 76, 113, 8, {
+  drawText('Prof. Ravinder Tanwar', pageWidth - 76, 109, 13, {
+    font: 'F2',
+    color: colors.navy,
+    align: 'right',
+  });
+  drawText('HOD, CSE (AI&DS)', pageWidth - 76, 93, 8, {
     color: colors.gray,
     align: 'right',
   });
-  drawText('JNCT, Bhopal', pageWidth - 76, 100, 8, {
+  drawText('JNCT, Bhopal', pageWidth - 76, 80, 8, {
     color: colors.gray,
     align: 'right',
   });
