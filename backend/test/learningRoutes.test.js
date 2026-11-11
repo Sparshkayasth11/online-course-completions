@@ -644,6 +644,10 @@ test('custom task route reports required-field validation errors as JSON', async
     assert.match(certificatePdf, /Artificial Intelligence & Data Science/);
     assert.match(certificatePdf, /\(COURSE TITLE\) Tj/);
     assert.match(certificatePdf, /\(COURSE BASICS\) Tj/);
+    assert.match(
+      certificatePdf,
+      /BT \/F2 11 Tf .* Tm \(Course Details\) Tj ET/
+    );
     assert.match(certificatePdf, /\(Course Duration\) Tj/);
     assert.match(certificatePdf, /\(8 Weeks\) Tj/);
     assert.match(certificatePdf, /\(Course Mode\) Tj/);
@@ -666,6 +670,10 @@ test('custom task route reports required-field validation errors as JSON', async
     );
     assert.ok(
       certificatePdf.indexOf('(COURSE TITLE)') <
+        certificatePdf.indexOf('(Course Details)')
+    );
+    assert.ok(
+      certificatePdf.indexOf('(Course Details)') <
         certificatePdf.indexOf('(Course Detail)')
     );
     assert.ok(
@@ -690,7 +698,7 @@ test('custom task route reports required-field validation errors as JSON', async
     );
     assert.match(
       certificatePdf,
-      /0\.55 0\.58 0\.62 RG 0\.7 w 392 140 m 536 140 l S Q/
+      /0\.55 0\.58 0\.62 RG 0\.7 w 392 140 m 536 140 l S Q\nBT \/F2 8 Tf .* Tm \(AUTHORIZED SIGNATORY\) Tj ET/
     );
     assert.doesNotMatch(
       certificatePdf,

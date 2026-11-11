@@ -277,6 +277,12 @@ function createCertificatePdf(student, courseTitle, completedAt) {
     align: 'center',
   });
 
+  drawText('Course Details', centerX, 470, 11, {
+    font: 'F2',
+    color: colors.navy,
+    align: 'center',
+  });
+
   const tableX = 70;
   const tableWidth = pageWidth - 140;
   const tableTop = 458;
