@@ -57,6 +57,69 @@
 			],
 			"isBackground": false,
 			"problemMatcher": []
+		},
+		{
+			"label": "Install backend Puppeteer",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"--prefix",
+				"backend",
+				"install",
+				"puppeteer"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Install Puppeteer Chrome runtime",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"--prefix",
+				"backend",
+				"exec",
+				"--",
+				"puppeteer",
+				"browsers",
+				"install",
+				"chrome"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Probe Puppeteer Chrome launch",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"-e",
+				"const p=require('./backend/node_modules/puppeteer'); console.log('Chrome:',p.executablePath()); p.launch({dumpio:true}).then(async b=>{console.log('launched');await b.close()}).catch(e=>{console.error(e);process.exitCode=1})"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Diagnose Puppeteer Chrome",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"backend/puppeteerDiagnostic.js"
+			],
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Add root Puppeteer dependency",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install",
+				"puppeteer",
+				"--ignore-scripts"
+			],
+			"isBackground": false,
+			"problemMatcher": []
 		}
 	]
 }

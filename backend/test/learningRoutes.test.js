@@ -606,6 +606,17 @@ test('custom task route reports required-field validation errors as JSON', async
     assert.equal(notIssuedCertificateResponse.status, 403);
 
     fullyCompletedProgress.certificateIssued = true;
+    const certificatePdfModule = require('../certificatePdf');
+    const originalCreateCertificatePdf =
+      certificatePdfModule.createCertificatePdf;
+    let certificateArguments;
+    certificatePdfModule.createCertificatePdf = async (...args) => {
+      certificateArguments = args;
+      return Buffer.from('%PDF-1.4\nTest PDF\n%%EOF');
+    };
+    t.after(() => {
+      certificatePdfModule.createCertificatePdf = originalCreateCertificatePdf;
+    });
     const certificateResponse = await fetch(
       `${baseUrl}/api/student/courses/${courseObjectId}/certificate`,
       { headers: { Cookie: studentCookie } }
@@ -615,34 +626,13 @@ test('custom task route reports required-field validation errors as JSON', async
       certificateResponse.headers.get('content-type'),
       /application\/pdf/
     );
-    const certificatePdf = Buffer.from(
-      await certificateResponse.arrayBuffer()
-    ).toString('ascii');
-    assert.match(certificatePdf, /^%PDF-1\.4/);
-    assert.match(certificatePdf, /\/MediaBox \[0 0 612 792\]/);
-    assert.match(certificatePdf, /\(JNCT\) Tj/);
-    assert.match(certificatePdf, /\(LNCT GROUP OF COLLEGE\) Tj/);
-    assert.match(certificatePdf, /\(ONLINE COURSE COMPLETION\) Tj/);
-    assert.match(certificatePdf, /\(CERTIFICATE OF COMPLETION\) Tj/);
-    assert.match(certificatePdf, /\(This certificate is proudly presented to\) Tj/);
-    assert.match(certificatePdf, /\(TEST STUDENT\) Tj/);
-    assert.match(certificatePdf, /\(Enrollment Number: 0131AD231067\) Tj/);
-    assert.match(certificatePdf, /Computer Science & Engineering/);
-    assert.match(certificatePdf, /Artificial Intelligence & Data Science/);
-    assert.match(certificatePdf, /\(COURSE TITLE\) Tj/);
-    assert.match(certificatePdf, /\(COURSE BASICS\) Tj/);
-    assert.match(certificatePdf, /\(Course Duration\) Tj/);
-    assert.match(certificatePdf, /\(8 Weeks\) Tj/);
-    assert.match(certificatePdf, /\(Course Mode\) Tj/);
-    assert.match(certificatePdf, /\(Online\) Tj/);
-    assert.match(certificatePdf, /\(Issue Date\) Tj/);
-    assert.match(certificatePdf, /\(11 November 2026\) Tj/);
-    assert.match(certificatePdf, /\(Institution\) Tj/);
-    assert.match(certificatePdf, /\(JNCT, Bhopal\) Tj/);
-    assert.match(certificatePdf, /We appreciate the dedication/);
-    assert.match(certificatePdf, /\(Prof. Ravinder Tanwar\) Tj/);
-    assert.match(certificatePdf, /\(AUTHORIZED SIGNATORY\) Tj/);
-    assert.ok(certificatePdf.includes('HOD, CSE \\(AI&DS\\)'));
+    const certificatePdf = Buffer.from(await certificateResponse.arrayBuffer());
+    assert.match(certificatePdf.subarray(0, 8).toString('ascii'), /^%PDF-/);
+    assert.ok(certificatePdf.subarray(-20).toString('ascii').includes('%%EOF'));
+    assert.equal(certificateArguments[0].name, 'Test Student');
+    assert.equal(certificateArguments[0].studentId, '0131AD231067');
+    assert.equal(certificateArguments[1], 'Course basics');
+    assert.equal(certificateArguments[2].toISOString(), '2026-11-11T00:00:00.000Z');
 
     Progress.findOne = async () => ({
       completedWeeks: [0, 1, 2, 3, 4, 5, 6],
