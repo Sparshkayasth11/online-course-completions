@@ -620,6 +620,14 @@ test('custom task route reports required-field validation errors as JSON', async
     ).toString('ascii');
     assert.match(certificatePdf, /^%PDF-1\.4/);
     assert.match(certificatePdf, /\/MediaBox \[0 0 612 792\]/);
+    assert.match(
+      certificatePdf,
+      /0\.05882353 0\.16862745 0\.36078431 RG 4 w 28 28 556 736 re S/
+    );
+    assert.match(
+      certificatePdf,
+      /0\.94117647 0\.95686275 0\.97647059 rg 78 482 456 50 re f/
+    );
     assert.match(certificatePdf, /\(JNCT\) Tj/);
     assert.match(certificatePdf, /\(LNCT GROUP OF COLLEGE\) Tj/);
     assert.match(certificatePdf, /\(ONLINE COURSE COMPLETION\) Tj/);
@@ -643,6 +651,26 @@ test('custom task route reports required-field validation errors as JSON', async
     assert.match(certificatePdf, /\(Prof. Ravinder Tanwar\) Tj/);
     assert.match(certificatePdf, /\(AUTHORIZED SIGNATORY\) Tj/);
     assert.ok(certificatePdf.includes('HOD, CSE \\(AI&DS\\)'));
+    assert.ok(
+      certificatePdf.indexOf('(Prof. Ravinder Tanwar)') <
+        certificatePdf.indexOf('(AUTHORIZED SIGNATORY)')
+    );
+    assert.ok(
+      certificatePdf.indexOf('(AUTHORIZED SIGNATORY)') <
+        certificatePdf.indexOf('HOD, CSE \\(AI&DS\\)')
+    );
+    assert.ok(
+      certificatePdf.indexOf('HOD, CSE \\(AI&DS\\)') <
+        certificatePdf.lastIndexOf('(JNCT, Bhopal)')
+    );
+    assert.match(
+      certificatePdf,
+      /0\.55 0\.58 0\.62 RG 0\.7 w 392 99 m 536 99 l S Q/
+    );
+    assert.doesNotMatch(
+      certificatePdf,
+      /Verified Online Certification|JNCT Completions Portal/
+    );
 
     Progress.findOne = async () => ({
       completedWeeks: [0, 1, 2, 3, 4, 5, 6],

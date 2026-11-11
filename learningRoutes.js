@@ -100,15 +100,15 @@ function createCertificatePdf(student, courseTitle, completedAt) {
   const pageHeight = 792;
   const commands = [];
   const colors = {
-    navy: [0.06, 0.17, 0.33],
+    navy: [15 / 255, 43 / 255, 92 / 255],
     blue: [0.08, 0.25, 0.48],
     gray: [0.32, 0.36, 0.4],
     lightGray: [0.9, 0.92, 0.94],
-    paleBlue: [0.93, 0.96, 0.99],
+    paleBlue: [240 / 255, 244 / 255, 249 / 255],
     white: [1, 1, 1],
   };
   const colorCommand = (color, operator) =>
-    `${color.map((channel) => Number(channel.toFixed(3))).join(' ')} ${operator}`;
+    `${color.map((channel) => Number(channel.toFixed(8))).join(' ')} ${operator}`;
   const rect = (x, y, width, height, { fill, stroke, lineWidth = 1 } = {}) => {
     if (fill) {
       commands.push(
@@ -342,12 +342,6 @@ function createCertificatePdf(student, courseTitle, completedAt) {
     { color: colors.gray, align: 'center' }
   );
 
-  drawText('Verified Online Certification', 76, 105, 8, {
-    color: [0.55, 0.58, 0.62],
-  });
-  drawText('JNCT Completions Portal', 76, 92, 8, {
-    color: [0.55, 0.58, 0.62],
-  });
   drawText('Prof. Ravinder Tanwar', pageWidth - 76, 109, 13, {
     font: 'F2',
     color: colors.navy,
