@@ -18,7 +18,6 @@ const {
   setStudentSessionCookie,
   verifyPassword,
 } = require('./auth');
-const certificatePdf = require('./backend/certificatePdf');
 
 const router = express.Router();
 const WEEK_UNLOCK_DELAY_MS = 7 * 24 * 60 * 60 * 1000;
@@ -81,6 +80,316 @@ function getWeekAvailableAt(progress, weekIndex) {
   return previousWeekCompletedAt
     ? new Date(previousWeekCompletedAt.getTime() + WEEK_UNLOCK_DELAY_MS)
     : null;
+}
+
+function createCertificatePdf(student, courseTitle, completedAt) {
+  const escapePdfText = (value) =>
+    String(value)
+      .normalize('NFKD')
+      .replace(/[^\x20-\x7e]/g, '')
+      .replace(/[\\()]/g, '\\$&');
+  const completionDate = new Date(completedAt).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+  const studentName = (student.name || 'Student').toUpperCase();
+  const enrollmentNumber = student.studentId || student._id.toString();
+  const pageWidth = 612;
+  const pageHeight = 792;
+  const commands = [];
+  const colors = {
+    navy: [0.06, 0.17, 0.33],
+    blue: [0.08, 0.25, 0.48],
+    gray: [0.32, 0.36, 0.4],
+    lightGray: [0.9, 0.92, 0.94],
+    paleBlue: [0.93, 0.96, 0.99],
+    white: [1, 1, 1],
+  };
+  const colorCommand = (color, operator) =>
+    `${color.map((channel) => Number(channel.toFixed(3))).join(' ')} ${operator}`;
+  const rect = (x, y, width, height, { fill, stroke, lineWidth = 1 } = {}) => {
+    if (fill) {
+      commands.push(
+        `q ${colorCommand(fill, 'rg')} ${x} ${y} ${width} ${height} re f Q`
+      );
+    }
+    if (stroke) {
+      commands.push(
+        `q ${colorCommand(stroke, 'RG')} ${lineWidth} w ${x} ${y} ${width} ${height} re S Q`
+      );
+    }
+  };
+  const line = (x1, y1, x2, y2, color = colors.lightGray, lineWidth = 0.7) => {
+    commands.push(
+      `q ${colorCommand(color, 'RG')} ${lineWidth} w ${x1} ${y1} m ${x2} ${y2} l S Q`
+    );
+  };
+  const characterWidth = (character) => {
+    if (' ilI.,:;\'!|'.includes(character)) return 0.25;
+    if ('MW@%'.includes(character)) return 0.85;
+    if (character === ' ') return 0.28;
+    if (/[A-Z]/.test(character)) return 0.65;
+    if (/[0-9]/.test(character)) return 0.56;
+    return 0.52;
+  };
+  const measureText = (value, fontSize) =>
+    [...String(value)].reduce(
+      (width, character) => width + characterWidth(character) * fontSize,
+      0
+    );
+  const drawText = (
+    value,
+    x,
+    y,
+    fontSize,
+    { font = 'F1', color = colors.gray, align = 'left' } = {}
+  ) => {
+    const textValue = escapePdfText(value);
+    const textX =
+      align === 'center'
+        ? x - measureText(textValue, fontSize) / 2
+        : align === 'right'
+          ? x - measureText(textValue, fontSize)
+          : x;
+    commands.push(
+      `BT /${font} ${fontSize} Tf ${colorCommand(color, 'rg')} 1 0 0 1 ${textX.toFixed(2)} ${y} Tm (${textValue}) Tj ET`
+    );
+  };
+  const wrapText = (value, maxWidth, fontSize) => {
+    const words = String(value).split(/\s+/);
+    const lines = [];
+    let currentLine = '';
+    for (const word of words) {
+      const candidate = currentLine ? `${currentLine} ${word}` : word;
+      if (currentLine && measureText(candidate, fontSize) > maxWidth) {
+        lines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine = candidate;
+      }
+    }
+    if (currentLine) lines.push(currentLine);
+    return lines;
+  };
+  const drawWrappedText = (value, x, y, maxWidth, fontSize, lineHeight, options) => {
+    const lines = wrapText(value, maxWidth, fontSize);
+    lines.forEach((lineText, index) =>
+      drawText(lineText, x, y - index * lineHeight, fontSize, options)
+    );
+    return lines.length;
+  };
+  const centerX = pageWidth / 2;
+
+  rect(0, 0, pageWidth, pageHeight, { fill: colors.white });
+  rect(28, 28, pageWidth - 56, pageHeight - 56, {
+    stroke: colors.navy,
+    lineWidth: 4,
+  });
+  rect(36, 36, pageWidth - 72, pageHeight - 72, {
+    stroke: colors.navy,
+    lineWidth: 1,
+  });
+
+  drawText('JNCT', centerX, 744, 13, {
+    font: 'F2',
+    color: colors.blue,
+    align: 'center',
+  });
+  drawText('LNCT GROUP OF COLLEGE', centerX, 725, 15, {
+    font: 'F2',
+    color: colors.navy,
+    align: 'center',
+  });
+  drawText('ONLINE COURSE COMPLETION', centerX, 707, 9, {
+    color: colors.gray,
+    align: 'center',
+  });
+  drawText('CERTIFICATE OF COMPLETION', centerX, 679, 22, {
+    font: 'F2',
+    color: colors.navy,
+    align: 'center',
+  });
+  line(70, 666, pageWidth - 70, 666, colors.lightGray, 1.2);
+
+  drawText('This certificate is proudly presented to', centerX, 644, 12, {
+    color: colors.gray,
+    align: 'center',
+  });
+  const studentNameFontSize = Math.min(
+    24,
+    (492 / measureText(studentName, 24)) * 24
+  );
+  drawText(studentName, centerX, 613, studentNameFontSize, {
+    font: 'F2',
+    color: colors.navy,
+    align: 'center',
+  });
+  line(
+    Math.max(
+      90,
+      centerX - measureText(studentName, studentNameFontSize) / 2 - 12
+    ),
+    605,
+    Math.min(
+      pageWidth - 90,
+      centerX + measureText(studentName, studentNameFontSize) / 2 + 12
+    ),
+    605,
+    colors.blue,
+    1.4
+  );
+  drawText(`Enrollment Number: ${enrollmentNumber}`, centerX, 585, 11, {
+    color: colors.gray,
+    align: 'center',
+  });
+  drawWrappedText(
+    'of the Department of Computer Science & Engineering (Artificial Intelligence & Data Science), JNCT, Bhopal, for successfully completing an 8-week online course.',
+    centerX,
+    564,
+    492,
+    10,
+    14,
+    { color: colors.gray, align: 'center' }
+  );
+
+  rect(78, 482, pageWidth - 156, 50, {
+    fill: colors.paleBlue,
+    stroke: [0.72, 0.81, 0.9],
+    lineWidth: 0.8,
+  });
+  drawText('COURSE TITLE', centerX, 514, 9, {
+    font: 'F2',
+    color: colors.blue,
+    align: 'center',
+  });
+  const certificateCourseTitle = (courseTitle || 'Course').toUpperCase();
+  const courseTitleFontSize = Math.min(
+    16,
+    ((pageWidth - 190) / measureText(certificateCourseTitle, 16)) * 16
+  );
+  drawText(certificateCourseTitle, centerX, 493, courseTitleFontSize, {
+    font: 'F2',
+    color: colors.navy,
+    align: 'center',
+  });
+
+  const tableX = 70;
+  const tableWidth = pageWidth - 140;
+  const tableTop = 458;
+  const labelColumnWidth = 164;
+  const headerHeight = 26;
+  const rowHeight = 25;
+  const tableRows = [
+    ['Course Duration', '8 Weeks'],
+    ['Department', 'Artificial Intelligence & Data Science'],
+    ['Course Mode', 'Online'],
+    ['Issue Date', completionDate],
+    ['Institution', 'JNCT, Bhopal'],
+  ];
+  const tableHeight = headerHeight + rowHeight * tableRows.length;
+  rect(tableX, tableTop - tableHeight, tableWidth, tableHeight, {
+    stroke: colors.lightGray,
+    lineWidth: 0.9,
+  });
+  rect(tableX, tableTop - headerHeight, tableWidth, headerHeight, {
+    fill: [0.96, 0.97, 0.98],
+  });
+  drawText('Course Detail', tableX + 12, tableTop - 17, 10, {
+    font: 'F2',
+    color: colors.gray,
+  });
+  drawText('Information', tableX + labelColumnWidth + 12, tableTop - 17, 10, {
+    font: 'F2',
+    color: colors.gray,
+  });
+  line(
+    tableX + labelColumnWidth,
+    tableTop - tableHeight,
+    tableX + labelColumnWidth,
+    tableTop,
+    colors.lightGray,
+    0.7
+  );
+  tableRows.forEach(([label, information], index) => {
+    const rowTop = tableTop - headerHeight - index * rowHeight;
+    const baseline = rowTop - 17;
+    drawText(label, tableX + 12, baseline, 9.5, { color: colors.gray });
+    drawText(information, tableX + labelColumnWidth + 12, baseline, 9.5, {
+      font: 'F2',
+      color: colors.navy,
+    });
+    if (index < tableRows.length - 1) {
+      line(
+        tableX,
+        rowTop - rowHeight,
+        tableX + tableWidth,
+        rowTop - rowHeight,
+        colors.lightGray,
+        0.6
+      );
+    }
+  });
+
+  drawWrappedText(
+    'We appreciate the dedication, commitment and enthusiasm demonstrated during the course and wish the student continued success in future academic and professional endeavors.',
+    centerX,
+    286,
+    480,
+    9,
+    13,
+    { color: colors.gray, align: 'center' }
+  );
+
+  drawText('Verified Online Certification', 76, 105, 8, {
+    color: [0.55, 0.58, 0.62],
+  });
+  drawText('JNCT Completions Portal', 76, 92, 8, {
+    color: [0.55, 0.58, 0.62],
+  });
+  drawText('Prof. Ravinder Tanwar', pageWidth - 76, 109, 13, {
+    font: 'F2',
+    color: colors.navy,
+    align: 'right',
+  });
+  line(pageWidth - 220, 99, pageWidth - 76, 99, [0.55, 0.58, 0.62], 0.7);
+  drawText('AUTHORIZED SIGNATORY', pageWidth - 76, 85, 8, {
+    font: 'F2',
+    color: colors.gray,
+    align: 'right',
+  });
+  drawText('HOD, CSE (AI&DS)', pageWidth - 76, 72, 8, {
+    color: colors.gray,
+    align: 'right',
+  });
+  drawText('JNCT, Bhopal', pageWidth - 76, 59, 8, {
+    color: colors.gray,
+    align: 'right',
+  });
+
+  const content = commands.join('\n');
+  const objects = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /Font << /F1 4 0 R /F2 6 0 R >> >> /Contents 5 0 R >>`,
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+    `<< /Length ${Buffer.byteLength(content, 'ascii')} >>\nstream\n${content}\nendstream`,
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>',
+  ];
+  let pdf = '%PDF-1.4\n';
+  const offsets = [0];
+  objects.forEach((object, index) => {
+    offsets.push(Buffer.byteLength(pdf, 'ascii'));
+    pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
+  });
+  const xrefOffset = Buffer.byteLength(pdf, 'ascii');
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  for (const offset of offsets.slice(1)) {
+    pdf += `${String(offset).padStart(10, '0')} 00000 n \n`;
+  }
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+  return Buffer.from(pdf, 'ascii');
 }
 
 function sendServerError(res, error) {
@@ -755,7 +1064,7 @@ router.get('/student/courses/:courseId/certificate', async (req, res) => {
       progress.completedAt ||
       getWeekCompletionDate(progress, 7) ||
       new Date();
-    const certificate = await certificatePdf.createCertificatePdf(
+    const certificate = createCertificatePdf(
       student,
       course.title,
       completedAt
