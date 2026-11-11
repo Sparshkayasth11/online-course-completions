@@ -585,7 +585,7 @@ test('custom task route reports required-field validation errors as JSON', async
     const fullyCompletedProgress = {
       completedWeeks: Array.from({ length: 8 }, (_, index) => index),
       completedModuleIndices: Array.from({ length: 8 }, (_, index) => index),
-      completedAt: new Date(),
+      completedAt: new Date('2026-11-11T00:00:00Z'),
       certificateIssued: false,
     };
     Progress.findOne = async () => fullyCompletedProgress;
@@ -619,11 +619,30 @@ test('custom task route reports required-field validation errors as JSON', async
       await certificateResponse.arrayBuffer()
     ).toString('ascii');
     assert.match(certificatePdf, /^%PDF-1\.4/);
-    assert.match(certificatePdf, /Jai Narain College of Technology, Bhopal/);
-    assert.match(certificatePdf, /8-Week Course Completion Certificate/);
-    assert.match(certificatePdf, /Roll Number: 0131AD231067/);
-    assert.match(certificatePdf, /Artificial Intelligence and Data Science/);
-    assert.match(certificatePdf, /Sparsh Srivastava/);
+    assert.match(certificatePdf, /\/MediaBox \[0 0 612 792\]/);
+    assert.match(certificatePdf, /\(JNCT\) Tj/);
+    assert.match(certificatePdf, /\(LNCT GROUP OF COLLEGE\) Tj/);
+    assert.match(certificatePdf, /\(ONLINE COURSE COMPLETION\) Tj/);
+    assert.match(certificatePdf, /\(CERTIFICATE OF COMPLETION\) Tj/);
+    assert.match(certificatePdf, /\(This certificate is proudly presented to\) Tj/);
+    assert.match(certificatePdf, /\(TEST STUDENT\) Tj/);
+    assert.match(certificatePdf, /\(Enrollment Number: 0131AD231067\) Tj/);
+    assert.match(certificatePdf, /Computer Science & Engineering/);
+    assert.match(certificatePdf, /Artificial Intelligence & Data Science/);
+    assert.match(certificatePdf, /\(COURSE TITLE\) Tj/);
+    assert.match(certificatePdf, /\(COURSE BASICS\) Tj/);
+    assert.match(certificatePdf, /\(Course Duration\) Tj/);
+    assert.match(certificatePdf, /\(8 Weeks\) Tj/);
+    assert.match(certificatePdf, /\(Course Mode\) Tj/);
+    assert.match(certificatePdf, /\(Online\) Tj/);
+    assert.match(certificatePdf, /\(Issue Date\) Tj/);
+    assert.match(certificatePdf, /\(11 November 2026\) Tj/);
+    assert.match(certificatePdf, /\(Institution\) Tj/);
+    assert.match(certificatePdf, /\(JNCT, Bhopal\) Tj/);
+    assert.match(certificatePdf, /We appreciate the dedication/);
+    assert.match(certificatePdf, /\(Prof. Ravinder Tanwar\) Tj/);
+    assert.match(certificatePdf, /\(AUTHORIZED SIGNATORY\) Tj/);
+    assert.ok(certificatePdf.includes('HOD, CSE \\(AI&DS\\)'));
 
     Progress.findOne = async () => ({
       completedWeeks: [0, 1, 2, 3, 4, 5, 6],
