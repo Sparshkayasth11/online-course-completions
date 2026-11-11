@@ -62,7 +62,7 @@ function Certificate({
           <p className="certificate-body text-[13px]">
             This certificate is proudly presented to
           </p>
-          <p className="certificate-recipient-name mt-4 break-words text-3xl uppercase sm:text-4xl">
+          <p className="certificate-recipient-name mt-4 break-words text-3xl font-bold uppercase sm:text-4xl">
             {studentName}
           </p>
           <p className="certificate-enrollment mt-2 text-[11px]">
@@ -77,12 +77,12 @@ function Certificate({
 
         <section
           aria-label="Course title"
-          className="certificate-course mt-9 text-center"
+          className="certificate-course mx-auto mt-8 w-full max-w-[150mm] border border-[#bca77d] bg-[#f7f1e4] px-5 py-4 text-center"
         >
           <p className="certificate-course-label text-[9px] font-bold uppercase">
             Course Title
           </p>
-          <h2 className="certificate-course-title mt-2 break-words text-2xl uppercase sm:text-3xl">
+          <h2 className="certificate-course-title mt-2 break-words text-2xl font-bold uppercase sm:text-3xl">
             {courseTitle}
           </h2>
         </section>

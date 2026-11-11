@@ -24,6 +24,18 @@ describe('Certificate', () => {
     expect(screen.getByRole('heading', { name: 'FRONTEND DEVELOPER' })).toBeInTheDocument();
     expect(screen.getByText('11 November 2026')).toBeInTheDocument();
     expect(screen.getByText('Prof. Ravinder Tanwar')).toBeInTheDocument();
+    expect(screen.getByLabelText('Course title')).toHaveClass('border');
+    expect(screen.getByText('SPARSH SHRIVASTAVA')).toHaveClass('font-bold');
+    expect(
+      screen.getByText(
+        'of the Department of Computer Science & Engineering (Artificial Intelligence & Data Science), JNCT, Bhopal, for successfully completing an 8-week online course.'
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'We appreciate the dedication, commitment and enthusiasm demonstrated during the course and wish the student continued success in future academic and professional endeavors.'
+      )
+    ).toBeInTheDocument();
   });
 
   test('uses the sample certificate values when props are omitted', () => {
