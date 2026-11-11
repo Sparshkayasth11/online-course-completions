@@ -1,165 +1,111 @@
-import './Certificate.css';
+import React from 'react';
 
-const DEFAULT_CERTIFICATE = {
-  studentName: 'SPARSH SHRIVASTAVA',
-  enrollmentNumber: '0131AD231067',
-  courseTitle: 'FRONTEND DEVELOPER',
-  issueDate: '11 November 2026',
-};
+const Certificate = ({ studentName, enrollmentNumber, courseTitle, issueDate }) => {
+  const handlePrint = () => {
+    window.print();
+  };
 
-function Certificate({
-  studentName = DEFAULT_CERTIFICATE.studentName,
-  enrollmentNumber = DEFAULT_CERTIFICATE.enrollmentNumber,
-  courseTitle = DEFAULT_CERTIFICATE.courseTitle,
-  issueDate = DEFAULT_CERTIFICATE.issueDate,
-}) {
   return (
-    <main className="certificate-shell min-h-screen px-4 py-8 sm:px-8 sm:py-10">
-      <div className="certificate-toolbar mx-auto mb-5 flex max-w-[215.9mm] justify-end">
-        <button
-          className="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
-          onClick={() => window.print()}
-          type="button"
-        >
-          Download Certificate
-        </button>
-      </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 print:bg-white print:p-0">
+      {/* Certificate Container */}
+      <div className="w-full max-w-4xl bg-white border-8 border-double border-blue-900 p-8 md:p-12 shadow-2xl relative print:shadow-none print:border-blue-900">
+        
+        {/* Header */}
+        <div className="text-center border-b-2 border-gray-200 pb-6 mb-6">
+          <h2 className="text-sm font-semibold tracking-widest text-blue-800 uppercase">JNCT</h2>
+          <h1 className="text-xl font-bold tracking-wider text-gray-800 uppercase">LNCT Group of College</h1>
+          <p className="text-xs text-gray-500 tracking-widest mt-1">ONLINE COURSE COMPLETION</p>
+          <h3 className="text-2xl md:text-3xl font-extrabold text-blue-900 mt-2 uppercase tracking-wide">Certificate of Completion</h3>
+        </div>
 
-      <article
-        aria-label={`Certificate of completion for ${studentName}`}
-        className="certificate-page mx-auto flex flex-col"
-      >
-        <header className="certificate-header flex flex-col items-center text-center">
-          <svg
-            aria-hidden="true"
-            className="certificate-seal"
-            viewBox="0 0 64 64"
-          >
-            <circle cx="32" cy="32" r="29" fill="#f7f1e4" stroke="#b48b47" strokeWidth="2" />
-            <circle cx="32" cy="32" r="24" fill="none" stroke="#17334b" strokeWidth="1.5" />
-            <circle cx="32" cy="32" r="18" fill="#17334b" />
-            <circle cx="32" cy="32" r="10" fill="#8a3d3d" />
-            <path d="M32 22l2.8 7.2L42 32l-7.2 2.8L32 42l-2.8-7.2L22 32l7.2-2.8z" fill="#d4b77a" />
-            <circle cx="10" cy="32" r="1.5" fill="#17334b" />
-            <circle cx="54" cy="32" r="1.5" fill="#17334b" />
-          </svg>
-          <p className="certificate-institution mt-1 text-[10px] font-bold uppercase">
-            JNCT
-          </p>
-          <p className="certificate-group text-[7px] font-semibold uppercase">
-            LNCT GROUP OF COLLEGE
-          </p>
-          <p className="certificate-kicker mt-7 text-[10px] font-bold uppercase">
-            ONLINE COURSE COMPLETION
-          </p>
-          <h1 className="certificate-heading mt-2 text-center text-2xl uppercase sm:text-3xl">
-            Certificate of Completion
-          </h1>
-          <span aria-hidden="true" className="certificate-rule mt-4" />
-        </header>
+        {/* Body Content */}
+        <div className="text-center my-6">
+          <p className="text-gray-600 italic text-sm md:text-base">This certificate is proudly presented to</p>
+          
+          <div className="my-4">
+            <h1 className="text-3xl md:text-4xl font-black text-gray-900 uppercase tracking-wider border-b-2 border-blue-900 inline-block pb-1 px-6">
+              {studentName || "SPARSH SHRIVASTAVA"}
+            </h1>
+          </div>
 
-        <section className="certificate-recipient mt-5 text-center">
-          <p className="certificate-body text-[13px]">
-            This certificate is proudly presented to
+          <p className="text-gray-700 font-semibold text-sm md:text-base mt-2">
+            Enrollment Number: <span className="text-gray-900">{enrollmentNumber || "0131AD231067"}</span>
           </p>
-          <p className="certificate-recipient-name mt-4 break-words text-3xl font-bold uppercase sm:text-4xl">
-            {studentName}
-          </p>
-          <p className="certificate-enrollment mt-2 text-[11px]">
-            Enrollment Number: {enrollmentNumber}
-          </p>
-          <p className="certificate-body mx-auto mt-4 max-w-[175mm] text-[12px] leading-5">
-            of the Department of Computer Science &amp; Engineering (Artificial
-            Intelligence &amp; Data Science), JNCT, Bhopal, for successfully
-            completing an 8-week online course.
-          </p>
-        </section>
 
-        <section
-          aria-label="Course title"
-          className="certificate-course mx-auto mt-8 w-full max-w-[150mm] border border-[#bca77d] bg-[#f7f1e4] px-5 py-4 text-center"
-        >
-          <p className="certificate-course-label text-[9px] font-bold uppercase">
-            Course Title
+          <p className="text-gray-600 text-xs md:text-sm max-w-2xl mx-auto mt-3 leading-relaxed">
+            of the Department of Computer Science & Engineering (Artificial Intelligence & Data Science), JNCT, Bhopal, for successfully completing an 8-week online course.
           </p>
-          <h2 className="certificate-course-title mt-2 break-words text-2xl font-bold uppercase sm:text-3xl">
-            {courseTitle}
+        </div>
+
+        {/* Course Title Section */}
+        <div className="my-6 text-center bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-xl mx-auto">
+          <p className="text-xs font-bold text-blue-800 tracking-widest uppercase">Course Title</p>
+          <h2 className="text-xl md:text-2xl font-extrabold text-blue-950 mt-1 uppercase">
+            {courseTitle || "Frontend Developer"}
           </h2>
-        </section>
+        </div>
 
-        <section aria-labelledby="certificate-details-heading" className="mt-6">
-          <h2
-            className="certificate-details-heading text-center text-sm font-bold"
-            id="certificate-details-heading"
-          >
-            Course Details
-          </h2>
-          <table className="certificate-details mt-3 w-full table-fixed border-collapse text-left text-[10px]">
-            <thead>
-              <tr>
-                <th className="w-1/3 px-2 py-2 font-bold" scope="col">
-                  Course Detail
-                </th>
-                <th className="px-2 py-2 font-bold" scope="col">
-                  Information
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th className="px-2 py-2 font-semibold" scope="row">
-                  Course Duration
-                </th>
-                <td className="px-2 py-2">8 Weeks</td>
-              </tr>
-              <tr>
-                <th className="px-2 py-2 font-semibold" scope="row">
-                  Department
-                </th>
-                <td className="px-2 py-2">
-                  Artificial Intelligence &amp; Data Science
-                </td>
-              </tr>
-              <tr>
-                <th className="px-2 py-2 font-semibold" scope="row">
-                  Course Mode
-                </th>
-                <td className="px-2 py-2">Online</td>
-              </tr>
-              <tr>
-                <th className="px-2 py-2 font-semibold" scope="row">
-                  Issue Date
-                </th>
-                <td className="px-2 py-2">{issueDate}</td>
-              </tr>
-              <tr>
-                <th className="px-2 py-2 font-semibold" scope="row">
-                  Institution
-                </th>
-                <td className="px-2 py-2">JNCT, Bhopal</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
+        {/* Course Details Grid */}
+        <div className="my-6 max-w-xl mx-auto border border-gray-200 rounded-lg overflow-hidden text-sm">
+          <div className="grid grid-cols-2 bg-gray-50 px-4 py-2 border-b border-gray-200 font-semibold text-gray-700">
+            <div>Course Detail</div>
+            <div>Information</div>
+          </div>
+          <div className="grid grid-cols-2 px-4 py-1.5 border-b border-gray-100 text-gray-600">
+            <div>Course Duration</div>
+            <div className="font-medium text-gray-800">8 Weeks</div>
+          </div>
+          <div className="grid grid-cols-2 px-4 py-1.5 border-b border-gray-100 text-gray-600">
+            <div>Department</div>
+            <div className="font-medium text-gray-800">Artificial Intelligence & Data Science</div>
+          </div>
+          <div className="grid grid-cols-2 px-4 py-1.5 border-b border-gray-100 text-gray-600">
+            <div>Course Mode</div>
+            <div className="font-medium text-gray-800">Online</div>
+          </div>
+          <div className="grid grid-cols-2 px-4 py-1.5 border-b border-gray-100 text-gray-600">
+            <div>Issue Date</div>
+            <div className="font-medium text-gray-800">{issueDate || "11 November 2026"}</div>
+          </div>
+          <div className="grid grid-cols-2 px-4 py-1.5 text-gray-600">
+            <div>Institution</div>
+            <div className="font-medium text-gray-800">JNCT, Bhopal</div>
+          </div>
+        </div>
 
-        <p className="certificate-body mt-5 text-[11px] leading-5">
-          We appreciate the dedication, commitment and enthusiasm demonstrated
-          during the course and wish the student continued success in future
-          academic and professional endeavors.
+        {/* Closing Statement */}
+        <p className="text-center text-gray-500 text-xs md:text-sm max-w-2xl mx-auto my-4 leading-relaxed">
+          We appreciate the dedication, commitment and enthusiasm demonstrated during the course and wish the student continued success in future academic and professional endeavors.
         </p>
 
-        <footer className="certificate-signatory mt-auto pt-8 text-right">
-          <span aria-hidden="true" className="certificate-signature-rule" />
-          <p className="mt-2 text-[11px] font-semibold">Authorized Signatory</p>
-          <p className="certificate-signatory-name mt-1 text-[12px] font-bold">
-            Prof. Ravinder Tanwar
-          </p>
-          <p className="text-[10px]">HOD, CSE (AI&amp;DS)</p>
-          <p className="text-[10px]">JNCT, Bhopal</p>
-        </footer>
-      </article>
-    </main>
+        {/* Footer / Signatory */}
+        <div className="mt-8 flex justify-between items-end px-6">
+          <div className="text-left text-xs text-gray-400">
+            <p>Verified Online Certification</p>
+            <p>JNCT Completions Portal</p>
+          </div>
+          <div className="text-right">
+            <div className="mb-2 font-serif text-lg font-bold text-blue-900 tracking-wider">Prof. Ravinder Tanwar</div>
+            <div className="border-t border-gray-400 pt-1 text-xs font-semibold text-gray-700 uppercase">
+              Authorized Signatory
+            </div>
+            <div className="text-xs text-gray-500">HOD, CSE (AI&DS)</div>
+            <div className="text-xs text-gray-500">JNCT, Bhopal</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Print Button (Hidden on Print) */}
+      <div className="mt-6 print:hidden">
+        <button
+          onClick={handlePrint}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-lg transition duration-200"
+        >
+          Download / Print Certificate
+        </button>
+      </div>
+    </div>
   );
-}
+};
 
 export default Certificate;

@@ -20,12 +20,12 @@ describe('Certificate', () => {
       screen.getByRole('heading', { name: 'Certificate of Completion' })
     ).toBeInTheDocument();
     expect(screen.getByText('SPARSH SHRIVASTAVA')).toBeInTheDocument();
-    expect(screen.getByText('Enrollment Number: 0131AD231067')).toBeInTheDocument();
+    expect(screen.getByText('0131AD231067')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'FRONTEND DEVELOPER' })).toBeInTheDocument();
     expect(screen.getByText('11 November 2026')).toBeInTheDocument();
     expect(screen.getByText('Prof. Ravinder Tanwar')).toBeInTheDocument();
-    expect(screen.getByLabelText('Course title')).toHaveClass('border');
-    expect(screen.getByText('SPARSH SHRIVASTAVA')).toHaveClass('font-bold');
+    expect(screen.getByText('Course Title').parentElement).toHaveClass('border');
+    expect(screen.getByText('SPARSH SHRIVASTAVA')).toHaveClass('font-black');
     expect(
       screen.getByText(
         'of the Department of Computer Science & Engineering (Artificial Intelligence & Data Science), JNCT, Bhopal, for successfully completing an 8-week online course.'
@@ -42,8 +42,8 @@ describe('Certificate', () => {
     render(<Certificate />);
 
     expect(screen.getByText('SPARSH SHRIVASTAVA')).toBeInTheDocument();
-    expect(screen.getByText('Enrollment Number: 0131AD231067')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'FRONTEND DEVELOPER' })).toBeInTheDocument();
+    expect(screen.getByText('0131AD231067')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Frontend Developer' })).toBeInTheDocument();
     expect(screen.getByText('11 November 2026')).toBeInTheDocument();
   });
 
@@ -52,7 +52,7 @@ describe('Certificate', () => {
     render(<Certificate />);
 
     fireEvent.click(
-      screen.getByRole('button', { name: 'Download Certificate' })
+      screen.getByRole('button', { name: 'Download / Print Certificate' })
     );
 
     expect(print).toHaveBeenCalledTimes(1);
