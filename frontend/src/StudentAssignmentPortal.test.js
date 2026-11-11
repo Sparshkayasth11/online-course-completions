@@ -12,7 +12,6 @@ const firstModule = {
   contentSource: 'ai',
   lessons: [
     { day: 1, title: 'Values', content: 'Use values to represent data.' },
-    { day: 2, title: 'Expressions', content: 'Combine values and operators.' },
   ],
   quiz: [
     {
@@ -98,21 +97,9 @@ test('loads course materials and submits quiz answers through the student sessio
               content: 'Use values to represent data.',
               example: 'name = "Ada"',
             },
-            {
-              day: 2,
-              title: 'Expressions',
-              content: 'Combine values and operators.',
-            },
           ],
         },
-        completedTopicDays: [],
       })
-    )
-    .mockResolvedValueOnce(
-      apiResponse({ success: true, completedTopicDays: [1] })
-    )
-    .mockResolvedValueOnce(
-      apiResponse({ success: true, completedTopicDays: [1, 2] })
     )
     .mockResolvedValueOnce(
       apiResponse({
@@ -175,34 +162,11 @@ test('loads course materials and submits quiz answers through the student sessio
   expect(
     screen.queryByRole('button', { name: 'Submit quiz' })
   ).not.toBeInTheDocument();
-  expect(
-    screen.getByText('🔒 Complete all topics above to unlock the quiz.')
-  ).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Take Quiz' })).toBeDisabled();
-  fireEvent.click(screen.getAllByRole('button', { name: 'Mark as read' })[0]);
-  expect(
-    await screen.findByRole('button', { name: 'Completed' })
-  ).toBeDisabled();
-  expect(screen.getByRole('button', { name: 'Take Quiz' })).toBeDisabled();
-  fireEvent.click(screen.getByRole('button', { name: 'Mark as read' }));
-  await waitFor(() => {
-    expect(screen.getByRole('button', { name: 'Take Quiz' })).toBeEnabled();
-  });
   fireEvent.click(screen.getByRole('button', { name: 'Take Quiz' }));
   expect(screen.getByText('name = "Ada"')).toBeInTheDocument();
   expect(fetchMock).toHaveBeenCalledWith(
     `/api/student/courses/${courseId}/modules/0`,
-    expect.objectContaining({ credentials: 'include' })
-  );
-  expect(fetchMock).toHaveBeenNthCalledWith(
-    3,
-    `/api/student/courses/${courseId}/modules/0/topics/1/complete`,
-    { method: 'POST', credentials: 'include' }
-  );
-  expect(fetchMock).toHaveBeenNthCalledWith(
-    4,
-    `/api/student/courses/${courseId}/modules/0/topics/2/complete`,
-    { method: 'POST', credentials: 'include' }
+    undefined
   );
   fireEvent.click(screen.getByLabelText('def'));
   fireEvent.click(screen.getByRole('button', { name: 'Submit quiz' }));
@@ -394,8 +358,7 @@ test('refreshes and shows a certificate when an admin issues it before completio
   await waitFor(() => {
     expect(fetchMock).toHaveBeenNthCalledWith(
       4,
-      '/api/student/courses/0123456789abcdef01234567/certificate',
-      expect.objectContaining({ credentials: 'include' })
+      '/api/student/courses/0123456789abcdef01234567/certificate'
     );
   });
   expect(createObjectURL).toHaveBeenCalled();
@@ -505,6 +468,6 @@ test('allows retrying weekly module loads after an API error', async () => {
   expect(fetchMock).toHaveBeenNthCalledWith(
     2,
     `/api/student/courses/${courseId}/modules/0`,
-    expect.objectContaining({ credentials: 'include' })
+    undefined
   );
 });

@@ -663,13 +663,9 @@ async function getStudentCourseModule(req, res) {
     moduleContent.quiz = moduleContent.quiz.map(
       ({ question, options }) => ({ question, options })
     );
-    const completedTopicDays = (progress.completedTopics || [])
-      .filter((topic) => topic.moduleIndex === weekIndex)
-      .map((topic) => topic.topicDay);
     return res.status(200).json({
       weekIndex,
       module: moduleContent,
-      completedTopicDays,
       unlockStatus: {
         isUnlocked: weekIndex <= currentWeekIndex || weekCompleted,
         isCompleted: weekCompleted,
@@ -685,101 +681,6 @@ async function getStudentCourseModule(req, res) {
 router.get(
   '/student/courses/:courseId/modules/:weekIndex',
   getStudentCourseModule
-);
-
-router.post(
-  '/student/courses/:courseId/modules/:weekIndex/topics/:topicDay/complete',
-  async (req, res) => {
-    const { courseId } = req.params;
-    const weekIndex = parseWeekIndex(req.params.weekIndex);
-    const topicDay =
-      typeof req.params.topicDay === 'string' &&
-      /^[1-9]\d*$/.test(req.params.topicDay)
-        ? Number(req.params.topicDay)
-        : null;
-    if (
-      !isValidId(courseId) ||
-      !Number.isInteger(weekIndex) ||
-      !Number.isInteger(topicDay)
-    ) {
-      return res.status(400).json({
-        error:
-          'courseId must be a MongoDB ObjectId, weekIndex must be from 0 to 7, and topicDay must be a positive integer.',
-      });
-    }
-
-    try {
-      const [student, course, progress] = await Promise.all([
-        User.findById(req.studentId).select('_id assignedCourses'),
-        Course.findById(courseId).select('_id modules'),
-        Progress.findOne({ studentId: req.studentId, courseId }),
-      ]);
-      if (!student) {
-        return res.status(404).json({ error: 'Student not found.' });
-      }
-      if (!course) {
-        return res.status(404).json({ error: 'Course not found.' });
-      }
-      if (
-        !student.assignedCourses.some((assignedCourseId) =>
-          assignedCourseId.equals(course._id)
-        )
-      ) {
-        return res.status(403).json({
-          error: 'This course is not assigned to the student.',
-        });
-      }
-      if (!progress) {
-        return res.status(404).json({ error: 'Progress record not found.' });
-      }
-      if (progress.currentModuleIndex !== weekIndex) {
-        return res.status(409).json({
-          error: 'Topics can only be completed in the active module.',
-        });
-      }
-      const weekAvailableAt = getWeekAvailableAt(progress, weekIndex);
-      if (weekAvailableAt && new Date(weekAvailableAt).getTime() > Date.now()) {
-        return res.status(403).json({
-          error:
-            'This week is not available yet. Wait seven days after completing the previous week.',
-          nextAvailableAt: new Date(weekAvailableAt).toISOString(),
-        });
-      }
-      const module = course.modules.find(
-        (item) => item.moduleIndex === weekIndex
-      );
-      if (!module?.lessons?.some((lesson) => lesson.day === topicDay)) {
-        return res.status(404).json({ error: 'Study topic not found.' });
-      }
-
-      const updatedProgress = await Progress.findOneAndUpdate(
-        {
-          studentId: student._id,
-          courseId: course._id,
-          currentModuleIndex: weekIndex,
-        },
-        {
-          $addToSet: {
-            completedTopics: { moduleIndex: weekIndex, topicDay },
-          },
-        },
-        { new: true, runValidators: true }
-      );
-      if (!updatedProgress) {
-        return res.status(409).json({
-          error: 'Progress changed while completing the topic. Please retry.',
-        });
-      }
-      return res.status(200).json({
-        success: true,
-        completedTopicDays: (updatedProgress.completedTopics || [])
-          .filter((topic) => topic.moduleIndex === weekIndex)
-          .map((topic) => topic.topicDay),
-      });
-    } catch (error) {
-      return sendServerError(res, error);
-    }
-  }
 );
 
 router.get('/student/dashboard', async (req, res) => {
@@ -1000,20 +901,6 @@ router.post(
     );
     if (!module || !module.quiz || module.quiz.length === 0) {
       return res.status(404).json({ error: 'Quiz not found for this module.' });
-    }
-    const completedTopicDays = new Set(
-      (currentProgress.completedTopics || [])
-        .filter((topic) => topic.moduleIndex === moduleIndex)
-        .map((topic) => topic.topicDay)
-    );
-    const incompleteTopics = (module.lessons || []).filter(
-      (lesson) => !completedTopicDays.has(lesson.day)
-    );
-    if (!module.lessons?.length || incompleteTopics.length > 0) {
-      return res.status(403).json({
-        error: 'Complete all topics above to unlock the quiz.',
-        incompleteTopicDays: incompleteTopics.map((lesson) => lesson.day),
-      });
     }
     if (
       answers.length !== module.quiz.length ||

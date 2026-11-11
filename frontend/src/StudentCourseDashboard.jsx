@@ -37,8 +37,6 @@ export default function StudentCourseDashboard() {
   const [moduleContent, setModuleContent] = useState(null);
   const [moduleLoading, setModuleLoading] = useState(false);
   const [moduleRequestVersion, setModuleRequestVersion] = useState(0);
-  const [completedTopicDays, setCompletedTopicDays] = useState([]);
-  const [savingTopicDay, setSavingTopicDay] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [quizOpen, setQuizOpen] = useState(false);
   const [quizResult, setQuizResult] = useState(null);
@@ -203,7 +201,6 @@ export default function StudentCourseDashboard() {
   useEffect(() => {
     if (!selectedCourseId) {
       setModuleContent(null);
-      setCompletedTopicDays([]);
       setModuleLoading(false);
       return undefined;
     }
@@ -217,7 +214,6 @@ export default function StudentCourseDashboard() {
     let active = true;
     setError('');
     setModuleContent(null);
-    setCompletedTopicDays([]);
     setModuleLoading(true);
     requestJson(
       `/api/student/courses/${encodeURIComponent(selectedCourseId)}/modules/${selectedModuleIndex}`
@@ -233,7 +229,6 @@ export default function StudentCourseDashboard() {
             module: result.module,
             unlockStatus: result.unlockStatus,
           });
-          setCompletedTopicDays(result.completedTopicDays || []);
         }
       })
       .catch((requestError) => {
@@ -266,12 +261,6 @@ export default function StudentCourseDashboard() {
     selectedModuleIndex === currentModuleIndex &&
     isCurrentWeekAvailable &&
     (moduleContent?.unlockStatus?.isUnlocked ?? true);
-  const allTopicsCompleted = Boolean(
-    selectedModule?.lessons?.length &&
-    selectedModule.lessons.every((lesson) =>
-      completedTopicDays.includes(lesson.day)
-    )
-  );
   const allQuizQuestionsAnswered = Boolean(
     selectedModule?.quiz?.length &&
       Array.from({ length: selectedModule.quiz.length }, (_, index) =>
@@ -283,28 +272,6 @@ export default function StudentCourseDashboard() {
         .reverse()
         .find((attempt) => attempt.moduleIndex === selectedModule.moduleIndex)
     : null;
-
-  async function markTopicAsRead(topicDay) {
-    if (!selectedCourse || !selectedModule || !isCurrentWeek) {
-      return;
-    }
-
-    setSavingTopicDay(topicDay);
-    setError('');
-    try {
-      const result = await requestJson(
-        `/api/student/courses/${encodeURIComponent(
-          selectedCourse._id
-        )}/modules/${selectedModuleIndex}/topics/${topicDay}/complete`,
-        { method: 'POST' }
-      );
-      setCompletedTopicDays(result.completedTopicDays || []);
-    } catch (requestError) {
-      setError(requestError.message || 'Unable to save topic completion.');
-    } finally {
-      setSavingTopicDay(null);
-    }
-  }
 
   async function submitQuiz(event) {
     event.preventDefault();
@@ -758,28 +725,6 @@ export default function StudentCourseDashboard() {
                                   {lesson.example}
                                 </pre>
                               )}
-                              {isCurrentWeek && (
-                                <button
-                                  aria-pressed={completedTopicDays.includes(
-                                    lesson.day
-                                  )}
-                                  className="mt-3 rounded-lg border border-indigo-200 px-3 py-2 text-sm font-semibold text-indigo-800 hover:bg-indigo-50 disabled:cursor-default disabled:border-emerald-200 disabled:bg-emerald-50 disabled:text-emerald-800"
-                                  disabled={
-                                    completedTopicDays.includes(lesson.day) ||
-                                    savingTopicDay !== null
-                                  }
-                                  onClick={() =>
-                                    markTopicAsRead(lesson.day)
-                                  }
-                                  type="button"
-                                >
-                                  {savingTopicDay === lesson.day
-                                    ? 'Saving…'
-                                    : completedTopicDays.includes(lesson.day)
-                                      ? 'Completed'
-                                      : 'Mark as read'}
-                                </button>
-                              )}
                             </li>
                           ))}
                         </ol>
@@ -790,21 +735,12 @@ export default function StudentCourseDashboard() {
                       isCurrentWeek &&
                       !quizOpen && (
                         <div className="border-t border-slate-200 pt-6">
-                          {!allTopicsCompleted && (
-                            <p
-                              className="mb-3 text-sm font-medium text-amber-800"
-                              role="status"
-                            >
-                              🔒 Complete all topics above to unlock the quiz.
-                            </p>
-                          )}
                           <button
-                            className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-600"
+                            className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
                             onClick={() => {
                               setAnswers([]);
                               setQuizOpen(true);
                             }}
-                            disabled={!allTopicsCompleted}
                             type="button"
                           >
                             Take Quiz
