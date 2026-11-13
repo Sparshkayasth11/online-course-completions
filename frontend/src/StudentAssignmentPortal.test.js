@@ -166,6 +166,7 @@ test('loads course materials and submits quiz answers through the student sessio
   expect(
     screen.getByRole('heading', { name: 'Week 1 progress quiz' })
   ).toBeInTheDocument();
+  expect(screen.getByRole('main')).toHaveClass('text-slate-900');
   expect(screen.queryByText('name = "Ada"')).not.toBeInTheDocument();
   expect(
     screen.queryByText(

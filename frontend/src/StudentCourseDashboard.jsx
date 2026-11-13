@@ -351,7 +351,7 @@ export default function StudentCourseDashboard() {
   }
 
   return (
-    <main className="student-portal min-h-screen px-4 py-10 sm:px-6 lg:px-8">
+    <main className="student-portal min-h-screen px-4 py-10 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-6">
         {!isQuizStarted && (
           <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
@@ -497,7 +497,7 @@ export default function StudentCourseDashboard() {
           <section className="space-y-6">
             {isQuizStarted ? (
               selectedModule?.quiz?.length ? (
-                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-900 shadow-sm sm:p-8">
                   <form className="space-y-4" onSubmit={submitQuiz}>
                     <div>
                       <h2 className="text-xl font-bold text-slate-900">
