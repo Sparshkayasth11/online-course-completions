@@ -381,6 +381,24 @@
   color: var(--text-muted) !important;
 }
 
+.student-portal .quiz-workspace {
+  border-color: #d1d5db !important;
+  color: #1f2937 !important;
+  background: #fff !important;
+}
+
+.student-portal .quiz-workspace h1,
+.student-portal .quiz-workspace h2,
+.student-portal .quiz-workspace h3,
+.student-portal .quiz-workspace h4,
+.student-portal .quiz-workspace .quiz-instructions,
+.student-portal .quiz-workspace fieldset,
+.student-portal .quiz-workspace legend,
+.student-portal .quiz-workspace label,
+.student-portal .quiz-workspace label span {
+  color: #1f2937 !important;
+}
+
 .student-portal .text-indigo-700 {
   color: #a5b4fc !important;
 }
