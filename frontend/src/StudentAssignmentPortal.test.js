@@ -162,11 +162,22 @@ test('loads course materials and submits quiz answers through the student sessio
   expect(
     screen.queryByRole('button', { name: 'Submit quiz' })
   ).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: 'Take Quiz' }));
-  expect(screen.getByText('name = "Ada"')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Start Quiz' }));
+  expect(
+    screen.getByRole('heading', { name: 'Week 1 progress quiz' })
+  ).toBeInTheDocument();
+  expect(screen.queryByText('name = "Ada"')).not.toBeInTheDocument();
+  expect(
+    screen.queryByText(
+      'Gemini AI-generated teaching material and explanations'
+    )
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('navigation', { name: 'Eight-week syllabus' })
+  ).not.toBeInTheDocument();
   expect(fetchMock).toHaveBeenCalledWith(
     `/api/student/courses/${courseId}/modules/0`,
-    undefined
+    { credentials: 'include' }
   );
   fireEvent.click(screen.getByLabelText('def'));
   fireEvent.click(screen.getByRole('button', { name: 'Submit quiz' }));
@@ -358,7 +369,8 @@ test('refreshes and shows a certificate when an admin issues it before completio
   await waitFor(() => {
     expect(fetchMock).toHaveBeenNthCalledWith(
       4,
-      '/api/student/courses/0123456789abcdef01234567/certificate'
+      '/api/student/courses/0123456789abcdef01234567/certificate',
+      { credentials: 'include' }
     );
   });
   expect(createObjectURL).toHaveBeenCalled();
@@ -468,6 +480,6 @@ test('allows retrying weekly module loads after an API error', async () => {
   expect(fetchMock).toHaveBeenNthCalledWith(
     2,
     `/api/student/courses/${courseId}/modules/0`,
-    undefined
+    { credentials: 'include' }
   );
 });

@@ -38,7 +38,7 @@ export default function StudentCourseDashboard() {
   const [moduleLoading, setModuleLoading] = useState(false);
   const [moduleRequestVersion, setModuleRequestVersion] = useState(0);
   const [answers, setAnswers] = useState([]);
-  const [quizOpen, setQuizOpen] = useState(false);
+  const [isQuizStarted, setIsQuizStarted] = useState(false);
   const [quizResult, setQuizResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -267,12 +267,6 @@ export default function StudentCourseDashboard() {
         Number.isInteger(answers[index])
       ).every(Boolean)
   );
-  const latestQuizAttempt = selectedModule
-    ? [...(selectedCourse.progress.quizAttempts || [])]
-        .reverse()
-        .find((attempt) => attempt.moduleIndex === selectedModule.moduleIndex)
-    : null;
-
   async function submitQuiz(event) {
     event.preventDefault();
     if (!selectedCourse || !selectedModule || !isCurrentWeek) {
@@ -294,7 +288,7 @@ export default function StudentCourseDashboard() {
       setQuizResult(result);
       if (result.passed) {
         setAnswers([]);
-        setQuizOpen(false);
+        setIsQuizStarted(false);
       }
       await loadDashboard();
     } catch (requestError) {
@@ -359,15 +353,17 @@ export default function StudentCourseDashboard() {
   return (
     <main className="student-portal min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-6">
-        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-          <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
-            JNCT Completions · Student dashboard
-          </p>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
-            Welcome, {dashboard?.student.name}
-          </h1>
-          <p className="mt-1 text-slate-600">{dashboard?.student.email}</p>
-        </section>
+        {!isQuizStarted && (
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+            <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
+              JNCT Completions · Student dashboard
+            </p>
+            <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
+              Welcome, {dashboard?.student.name}
+            </h1>
+            <p className="mt-1 text-slate-600">{dashboard?.student.email}</p>
+          </section>
+        )}
 
         {error && (
           <p
@@ -378,7 +374,7 @@ export default function StudentCourseDashboard() {
           </p>
         )}
 
-        {quizResult && (
+        {quizResult && !isQuizStarted && (
           <p
             className={`rounded-lg p-4 text-sm ${
               quizResult.passed
@@ -471,7 +467,7 @@ export default function StudentCourseDashboard() {
                         setSelectedCourseId(course._id);
                         setSelectedModuleIndex(Math.min(currentWeek, 7));
                         setAnswers([]);
-                        setQuizOpen(false);
+                        setIsQuizStarted(false);
                         setQuizResult(null);
                       }}
                       type="button"
@@ -499,6 +495,81 @@ export default function StudentCourseDashboard() {
 
         {selectedCourse && (
           <section className="space-y-6">
+            {isQuizStarted ? (
+              selectedModule?.quiz?.length ? (
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                  <form className="space-y-4" onSubmit={submitQuiz}>
+                    <div>
+                      <h2 className="text-xl font-bold text-slate-900">
+                        Week {selectedModuleIndex + 1} progress quiz
+                      </h2>
+                      <p className="mt-1 text-sm text-slate-600">
+                        Answer each question. A score of 70% passes and
+                        completes this week.
+                      </p>
+                    </div>
+                    {quizResult && (
+                      <p
+                        className={`rounded-lg p-4 text-sm ${
+                          quizResult.passed
+                            ? 'bg-emerald-50 text-emerald-800'
+                            : 'bg-amber-50 text-amber-900'
+                        }`}
+                        role="status"
+                      >
+                        {quizResult.message} Score: {quizResult.score}% (
+                        {quizResult.correctCount}/{quizResult.questionCount}).
+                      </p>
+                    )}
+                    {selectedModule.quiz.map((question, questionIndex) => (
+                      <fieldset
+                        className="rounded-lg border border-slate-200 p-4"
+                        key={`${questionIndex}-${question.question}`}
+                      >
+                        <legend className="px-1 font-medium text-slate-800">
+                          {questionIndex + 1}. {question.question}
+                        </legend>
+                        <div className="mt-2 space-y-2">
+                          {question.options.map((option, optionIndex) => (
+                            <label
+                              className="flex items-start gap-2 text-sm text-slate-700"
+                              key={optionIndex}
+                            >
+                              <input
+                                checked={answers[questionIndex] === optionIndex}
+                                name={`quiz-${questionIndex}`}
+                                onChange={() =>
+                                  setAnswers((current) => {
+                                    const next = [...current];
+                                    next[questionIndex] = optionIndex;
+                                    return next;
+                                  })
+                                }
+                                required
+                                type="radio"
+                              />
+                              <span>{option}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </fieldset>
+                    ))}
+                    <button
+                      className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
+                      disabled={busy || !allQuizQuestionsAnswered}
+                      type="submit"
+                    >
+                      Submit quiz
+                    </button>
+                  </form>
+                </div>
+              ) : (
+                <p className="rounded-lg bg-slate-50 p-4 text-slate-700" role="status">
+                  Loading quiz…
+                </p>
+              )
+            ) : (
+              <>
             <button
               className="text-sm font-semibold text-indigo-700 hover:text-indigo-900"
               onClick={() => setSelectedCourseId('')}
@@ -588,7 +659,7 @@ export default function StudentCourseDashboard() {
                           onClick={() => {
                             setSelectedModuleIndex(weekIndex);
                             setAnswers([]);
-                            setQuizOpen(false);
+                            setIsQuizStarted(false);
                             setQuizResult(null);
                           }}
                           type="button"
@@ -731,89 +802,21 @@ export default function StudentCourseDashboard() {
                       )}
                     </section>
 
-                    {selectedModule.quiz?.length > 0 &&
-                      isCurrentWeek &&
-                      !quizOpen && (
-                        <div className="border-t border-slate-200 pt-6">
-                          <button
-                            className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
-                            onClick={() => {
-                              setAnswers([]);
-                              setQuizOpen(true);
-                            }}
-                            type="button"
-                          >
-                            Take Quiz
-                          </button>
-                        </div>
-                      )}
-
-                    {selectedModule.quiz?.length > 0 &&
-                      isCurrentWeek &&
-                      quizOpen && (
-                        <form
-                          className="space-y-4 border-t border-slate-200 pt-6"
-                          onSubmit={submitQuiz}
+                    {selectedModule.quiz?.length > 0 && isCurrentWeek && (
+                      <div className="border-t border-slate-200 pt-6">
+                        <button
+                          className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+                          onClick={() => {
+                            setAnswers([]);
+                            setQuizResult(null);
+                            setIsQuizStarted(true);
+                          }}
+                          type="button"
                         >
-                          <div>
-                            <h3 className="text-lg font-semibold text-slate-900">
-                              Week {selectedModuleIndex + 1} progress quiz
-                            </h3>
-                            <p className="mt-1 text-sm text-slate-600">
-                              Answer each question. A score of 70% passes and
-                              completes this week.
-                            </p>
-                          </div>
-                          {selectedModule.quiz.map((question, questionIndex) => (
-                            <fieldset
-                              className="rounded-lg border border-slate-200 p-4"
-                              key={`${questionIndex}-${question.question}`}
-                            >
-                              <legend className="px-1 font-medium text-slate-800">
-                                {questionIndex + 1}. {question.question}
-                              </legend>
-                              <div className="mt-2 space-y-2">
-                                {question.options.map((option, optionIndex) => (
-                                  <label
-                                    className="flex items-start gap-2 text-sm text-slate-700"
-                                    key={optionIndex}
-                                  >
-                                    <input
-                                      checked={answers[questionIndex] === optionIndex}
-                                      name={`quiz-${questionIndex}`}
-                                      onChange={() =>
-                                        setAnswers((current) => {
-                                          const next = [...current];
-                                          next[questionIndex] = optionIndex;
-                                          return next;
-                                        })
-                                      }
-                                      required
-                                      type="radio"
-                                    />
-                                    <span>{option}</span>
-                                  </label>
-                                ))}
-                              </div>
-                            </fieldset>
-                          ))}
-                          {latestQuizAttempt && (
-                            <p className="text-sm text-slate-600">
-                              Latest attempt: {latestQuizAttempt.score}% —{' '}
-                              {latestQuizAttempt.passed
-                                ? 'Passed'
-                                : 'Not passed yet'}
-                            </p>
-                          )}
-                          <button
-                            className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60"
-                            disabled={busy || !allQuizQuestionsAnswered}
-                            type="submit"
-                          >
-                            Submit quiz
-                          </button>
-                        </form>
-                      )}
+                          Start Quiz
+                        </button>
+                      </div>
+                    )}
 
                     {!isCurrentWeek && (
                       <p className="border-t border-slate-200 pt-6 text-sm text-emerald-800">
@@ -845,6 +848,8 @@ export default function StudentCourseDashboard() {
                 )
               )}
             </div>
+              </>
+            )}
           </section>
         )}
 
